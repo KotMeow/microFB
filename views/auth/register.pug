@@ -1,0 +1,22 @@
+extends ../layout
+
+block content
+  div.login-container
+    div.login-box
+      h1.title.is-1.has-text-centered.welcome Create an account!
+      form(role='form', action="/auth/register", method="post")
+        .field
+          p.control
+            input.input(type='text', placeholder='Name', name='username')
+        .field
+          p.control
+            input.input(type='text', placeholder='E-mail', name='email')
+        .field
+          p.control
+            input.input(type='password', placeholder='Password', name='password')
+        .field.is-grouped.is-pulled-right
+          p.control
+            button.button.is-link
+              a(href='login') Already have an account? Log In!
+          p.control
+            button.button.is-primary Sign Up

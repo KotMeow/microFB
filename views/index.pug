@@ -1,6 +1,7 @@
 extends layout
 
 block content
-  h1.title.is-1= title
-  p Welcome to #{title} #{views}
-  button#butt Butt
+  include ./shared/navbar
+  .container
+    h1.title.is-1 Welcome in microFB #{user.username}
+    button#butt Butt

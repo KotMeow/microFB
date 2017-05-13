@@ -4,18 +4,25 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var lessMiddleware = require('less-middleware');
+var bluebird = require("bluebird");
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
+var mongoose = require('mongoose');
+mongoose.Promise = bluebird;
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 
-const sessionStore = new RedisStore({
-  host: 'localhost',
-  port: 6379,
-  client: require('redis').createClient(),
-  ttl:  260
-});
+
+// const sessionStore = new RedisStore({
+//   host: 'localhost',
+//   port: 6379,
+//   client: require('redis').createClient(),
+//   ttl:  260
+// });
 
 var index = require('./routes/index');
-var users = require('./routes/users');
+var profile = require('./routes/profile');
+var auth = require('./routes/auth');
 
 var app = express();
 
@@ -27,26 +34,37 @@ const sessionKey = 'express.sid';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(session({
-  key: sessionKey,
-  secret: sessionSecret,
-  store: sessionStore,
-  resave: false,
-  saveUninitialized: true,
-}));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(session({
+  key: sessionKey,
+  secret: sessionSecret,
+  //nie działa na windowsowym redisie
+  //store: sessionStore,
+  resave: false,
+  saveUninitialized: true,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-
-
 app.use('/', index);
-app.use('/users', users);
+app.use('/profile', profile);
+app.use('/auth', auth);
 
+var User = require('./models/user');
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+mongoose.connect('mongodb://localhost/test');
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
