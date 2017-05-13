@@ -5,18 +5,25 @@ block content
     div.login-box
       h1.title.is-1.has-text-centered.welcome Welcome!
       if (error)
-        p.subtitle #{error}
-      form(role='form', action="/auth/login", method="post")
+        .notification.is-danger
+          p=error
+      form(role='form', action="/auth/login", method="post").white-form
         .field
-          p.control
-            input.input(type='text', placeholder='Name', name='username')
+          label.label Username
+          p.control.has-icons-left.has-icons-right
+            input.input(type='text', placeholder='Username', name='username', required)
+            span.icon.is-small.is-left
+              i.fa.fa-user
         .field
-          p.control
-            input.input(type='password', placeholder='Password', name='password')
+          label.label Password
+          p.control.has-icons-left.has-icons-right
+            input.input(type='password', placeholder='Password', name='password', required)
+            span.icon.is-small.is-left
+              i.fa.fa-lock
         .field.is-grouped.is-pulled-right
           p.control
             button.button.is-link
-              a(href='register') Don't have an account? Register!
+              a(href='register') Don't have an account? Sign Up!
           p.control
-            button.button.is-primary Sign In
+            button.button.is-primary Sign Up
 

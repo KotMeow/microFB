@@ -3,17 +3,17 @@ var router = express.Router();
 var passport = require('passport');
 var User = require('../models/user');
 
-router.get('/login', function (req, res, next) {
+router.get('/login', (req, res, next) =>{
   res.render('auth/login');
 });
 
-router.post('/login', function (req, res, next) {
+router.post('/login', (req, res, next) =>{
 
-  passport.authenticate('local', function (err, user) {
+  passport.authenticate('local', (err, user) =>{
     if (err) res.send(err);
-    else if (!user) res.render('auth/login', {error: 'usernotfound'});
+    else if (!user) res.render('auth/login', {error: 'Invalid username/password'});
     else {
-      req.logIn(user, function (err) {
+      req.logIn(user, err =>{
         if (err) {
           return next(err);
         }
@@ -24,27 +24,33 @@ router.post('/login', function (req, res, next) {
 
 });
 
-router.get('/register', function (req, res) {
+router.get('/register', (req, res) =>{
   res.render('auth/register');
 });
 
-router.post('/register', function (req, res) {
+router.post('/register', (req, res) =>{
   User.register(new User({
     username: req.body.username,
     email: req.body.email
-  }), req.body.password, function (err, user) {
+  }), req.body.password, (err, user) =>{
     if (err) {
-      console.log('error');
-      return res.render('auth/register', {user: user});
+      return res.render('auth/register', {error: err.message});
     }
 
-    passport.authenticate('local')(req, res, function () {
+    passport.authenticate('local')(req, res, () =>{
       res.redirect('/');
     });
   });
 });
 
-router.get('/logout', function (req, res) {
+router.post('/checkexist', (req,res) => {
+  User.find({username: req.body.username}).then(data => {
+    console.log(data);
+    res.send(data)
+  });
+});
+
+router.get('/logout', (req, res) =>{
   req.logout();
   res.redirect('/auth/login');
 });
