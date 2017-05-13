@@ -11,6 +11,8 @@ var mongoose = require('mongoose');
 mongoose.Promise = bluebird;
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var expressValidator = require('express-validator');
+
 
 
 // const sessionStore = new RedisStore({
@@ -37,6 +39,8 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(expressValidator());
 
 app.use(session({
   key: sessionKey,

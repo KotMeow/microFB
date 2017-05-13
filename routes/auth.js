@@ -29,6 +29,33 @@ router.get('/register', (req, res) =>{
 });
 
 router.post('/register', (req, res) =>{
+  req.checkBody({
+    'email': {
+      isEmail: {
+        errorMessage: 'Invalid Email'
+      }
+    },
+    'password': {
+      notEmpty: true,
+      isLength: {
+        options: [{ min: 3}],
+        errorMessage: 'Password must have at least 2 chars' // Error message for the validator, takes precedent over parameter message
+      },
+      errorMessage: 'Invalid Password' // Error message for the parameter
+    },
+    'username': {
+      isLength: {
+        options: [{ min: 2, max: 20 }],
+        errorMessage: 'Username must be between 2 and 20 chars long' // Error message for the validator, takes precedent over parameter message
+      },
+    }
+  });
+  var errors = req.validationErrors();
+  if (errors) {
+    console.log(errors);
+    return res.render('auth/register', {errors: errors});
+
+  }
   User.register(new User({
     username: req.body.username,
     email: req.body.email
