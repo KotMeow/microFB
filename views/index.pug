@@ -2,6 +2,69 @@ extends layout
 
 block content
   include ./shared/navbar
+  nav.sidebar
+    ul
+      li
+        div.online KK
+        div Kamil Kot
+      li
+        div.offline KI
+        div Ktos inny
+      li
+        div.online JK
+        div Jeszcze ktos
   .container
-    h1.title.is-1 Welcome in microFB #{user.username}
     button#butt Butt
+    .columns.is-mobile.is-multiline
+      each val in [1,2,3,4,5]
+        .column.is-10
+          .box
+            article.media
+              .media-left
+                figure.image.is-64x64
+                  img(src='https://scontent.fwaw5-1.fna.fbcdn.net/v/t1.0-9/14705663_1139212169458500_5947085306553102567_n.jpg?oh=143130e08d1cc4651c88b198048a2c1d&oe=59BDE55C', alt='Image')
+              .media-content
+                .content
+                  p
+                    strong Meow
+                    small    12.04.2017
+                    br
+                    | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean efficitur sit amet massa fringilla egestas. Nullam condimentum luctus turpis.
+                    | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean efficitur sit amet massa fringilla egestas. Nullam condimentum luctus turpis.
+                    | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean efficitur sit amet massa fringilla egestas. Nullam condimentum luctus turpis.
+                nav.level.is-mobile
+                  .level-left
+                    a.level-item
+                      span.icon.is-small
+                        i.fa.fa-retweet
+                    span(style="margin-left: -10px; margin-right: 10px;font-weight: 600")= val
+                    a.level-item
+                      span.icon.is-small
+                        i.fa.fa-heart
+                    span(style="margin-left: -10px; font-weight: 600")= val
+      each val in [1,3]
+        .column.is-10
+          .box
+            article.media
+              .media-left
+                figure.image.is-64x64
+                  img(src='https://scontent.fwaw5-1.fna.fbcdn.net/v/t1.0-9/14705663_1139212169458500_5947085306553102567_n.jpg?oh=143130e08d1cc4651c88b198048a2c1d&oe=59BDE55C', alt='Image')
+              .media-content
+                .content
+                  p
+                    strong Meow
+                    small    12.04.2017
+                    br
+                    | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean efficitur sit amet massa fringilla egestas. Nullam condimentum luctus turpis.
+                    | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean efficitur sit amet massa fringilla egestas. Nullam condimentum luctus turpis.
+                  img(src="images/mount.jpg")
+                nav.level.is-mobile
+                  .level-left
+                    a.level-item
+                      span.icon.is-small
+                        i.fa.fa-retweet
+                    span(style="margin-left: -10px; margin-right: 10px;font-weight: 600")= val
+                    a.level-item
+                      span.icon.is-small
+                        i.fa.fa-heart
+                    span(style="margin-left: -10px; font-weight: 600")= val

@@ -1,24 +1,31 @@
-.container
-  nav.nav
-    .nav-left
-      a.nav-item.nav-brand(href='/') microFB
-    .nav-center
-      a.nav-item
-        span.icon
-          i.fa.fa-github
-      a.nav-item
-        span.icon
-          i.fa.fa-twitter
-    // This "nav-toggle" hamburger menu is only visible on mobile
-    // You need JavaScript to toggle the "is-active" class on "nav-menu"
-    span.nav-toggle
-      span
-      span
-      span
-    // This "nav-menu" is hidden on mobile
-    // Add the modifier "is-active" to display it on mobile
-    .nav-right.nav-menu
-      a(href='/profile').nav-item
-        | Profile
-      a(href='/auth/logout').nav-item
-        | Log Out
+
+nav.nav
+  .nav-left
+    a.nav-item.nav-brand(href='/') microFB
+  .nav-center
+    a.nav-item(href="http://www.github.com/kotmeow")
+      span.icon
+        i.fa.fa-github
+  span.nav-toggle
+    span
+    span
+    span
+  // This "nav-menu" is hidden on mobile
+  // Add the modifier "is-active" to display it on mobile
+  .nav-right.nav-menu
+    a.nav-item.notify
+      span.icon
+        i.fa.fa-globe
+    .box.dropdown
+      ul
+        li.new-notification
+          a.nav-item Notification new
+        li
+          a.nav-item Notification old
+        li
+          a.nav-item Notification old
+
+    a(href='/profile').nav-item
+      | Profile
+    a(href='/auth/logout').nav-item
+      | Log Out
