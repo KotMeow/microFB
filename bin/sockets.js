@@ -8,6 +8,7 @@ module.exports.listen = function(server){
 
     socket.on('message', function(data) {
       console.log(data);
+      socket.emit('message', {init: "KK", name: "Król Króli"})
     });
 
   });
