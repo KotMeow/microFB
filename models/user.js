@@ -6,6 +6,7 @@ var User = new Schema({
   username: String,
   password: String,
   email: String,
+  friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
 });
 
 User.plugin(passportLocalMongoose);

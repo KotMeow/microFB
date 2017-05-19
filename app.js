@@ -16,8 +16,10 @@ var expressValidator = require('express-validator');
 
 
 // const sessionStore = new RedisStore({
-//   host: 'localhost',
-//   port: 6379,
+//   url: 'redis://meow:6f422b82fb841f5a753da69f4aa3bed9',
+//   host: '50.30.35.9',
+//   pass: '6f422b82fb841f5a753da69f4aa3bed9',
+//   port: 3388,
 //   client: require('redis').createClient(),
 //   ttl:  260
 // });

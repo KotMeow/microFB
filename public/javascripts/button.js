@@ -4,11 +4,11 @@
 $(function () {
 
   var socket = io();
-
+  socket.emit('join', username);
   var friendlist = $('#friend-list');
   $('#butt').on('click', () => {
     socket.emit('message', {
-      name: 'Kamil',
+      name: username,
       age: 15
     });
   });

@@ -14,6 +14,7 @@ block content
         div.online JK
         div Jeszcze ktos
   .container
+    h1= user.username
     button#butt Butt
     .columns.is-mobile.is-multiline
       each val in [1,2,3,4,5]
@@ -68,3 +69,6 @@ block content
                       span.icon.is-small
                         i.fa.fa-heart
                     span(style="margin-left: -10px; font-weight: 600")= val
+  script.
+    var username = '#{user.username}';
+  script(src='/javascripts/button.js')

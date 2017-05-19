@@ -7,11 +7,11 @@ var Post = require('../models/post');
 router.get('/', function(req, res, next) {
   Post.find({}).populate('_creator').then(post => {
     res.send(post);
-  });
+});
 });
 
-router.get('/all', function(req, res, next) {
-  User.find({}).then(users => {
+router.get('/me', function(req, res, next) {
+  User.findById(req.user).populate('friends').then(users => {
     res.send(users);
   })
 
