@@ -139,15 +139,6 @@ nav.sidebar > ul > li > div:nth-child(2) {
   text-align: left;
   padding-left: 0.7rem;
 }
-i.fa.fa-globe:after {
-  background: @red;
-  border-radius: 50%;
-  content: "";
-  display: inline-block;
-  height: 8px;
-  margin: 0 8px 10px 0;
-  width: 8px;
-}
 
 .dropdown {
   box-shadow: 0 0 8px #777;
@@ -161,5 +152,72 @@ i.fa.fa-globe:after {
   display: block;
 }
 .new-notification {
-  border-bottom: 2px solid @red;
+  background: @primary;
+}
+
+
+.notification {
+  right: 10px;
+  display: inline-block;
+  top: 2px;
+  position: relative;
+  padding: 0.6em;
+  background: inherit;
+  color: @grey;
+}
+
+.notification:hover {
+  color: #4a4a4a;
+}
+
+.notification::before {
+  font-size: 1.3rem;
+  display: block;
+  content: "\f0ac";
+  font-family: "FontAwesome";
+  transform-origin: top center;
+}
+
+.notification::after {
+  font-size: 0.8rem;
+  font-weight: 500;
+  position: absolute;
+  bottom: 20px;
+  margin-left: 2px;
+  padding: 5px 8px;
+  line-height: 100%;
+  opacity: 0;
+  content: attr(data-count);
+  color: @primary;
+  opacity: 0;
+}
+
+.notification.show-count::after {
+  opacity: 1;
+}
+
+
+.notification-box {
+  top: 60px;
+  position: absolute;
+  display: none;
+}
+
+.fa-envelope-o:hover {
+  color: @primary;
+}
+.fa-envelope-o {
+  margin-right: 40px;
+}
+
+hr {
+  margin: 5px;
+}
+
+.invite-content a {
+  margin-left: 5px;
+}
+
+.invite-content a.accept:hover {
+  color: @green;
 }

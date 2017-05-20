@@ -16,10 +16,4 @@ $(function () {
     friendlist.append(`<li><div class="online">${data.init}</div><div>${data.name}</div></li>`);
   });
 
-  const button = document.querySelector('.notify');
-  const dropdown = document.querySelector('.dropdown');
-
-  button.addEventListener('click', () => {
-    dropdown.classList.toggle('is-open');
-  });
 });
