@@ -26,7 +26,7 @@ var server = http.createServer(app);
  */
 
 server.listen(port);
-require('./sockets').listen(server);
+require('./sockets').listen(server, app.get('sessionStore'));
 server.on('error', onError);
 server.on('listening', onListening);
 

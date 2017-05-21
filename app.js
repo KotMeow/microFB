@@ -12,17 +12,10 @@ mongoose.Promise = bluebird;
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var expressValidator = require('express-validator');
+const MongoStore = require('connect-mongo')(session);
 
 
-
-// const sessionStore = new RedisStore({
-//   url: 'redis://meow:6f422b82fb841f5a753da69f4aa3bed9',
-//   host: '50.30.35.9',
-//   pass: '6f422b82fb841f5a753da69f4aa3bed9',
-//   port: 3388,
-//   client: require('redis').createClient(),
-//   ttl:  260
-// });
+mongoose.connect('mongodb://localhost/test');
 
 var index = require('./routes/index');
 var profile = require('./routes/profile');
@@ -30,6 +23,15 @@ var auth = require('./routes/auth');
 
 var app = express();
 
+// app.set('sessionStore', new RedisStore({
+//   url: 'redis://meow:6f422b82fb841f5a753da69f4aa3bed9',
+//   host: '50.30.35.9',
+//   pass: '6f422b82fb841f5a753da69f4aa3bed9',
+//   port: 3388,
+//   client: require('redis').createClient(),
+//   ttl:  260
+// }));
+app.set('sessionStore', new MongoStore({ mongooseConnection: mongoose.connection }));
 const sessionSecret = 'wielkiCzarnyKot';
 const sessionKey = 'express.sid';
 
@@ -48,7 +50,7 @@ app.use(session({
   key: sessionKey,
   secret: sessionSecret,
   //nie działa na windowsowym redisie
-  //store: sessionStore,
+  store: app.get('sessionStore'),
   resave: false,
   saveUninitialized: true,
 }));
@@ -70,7 +72,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-mongoose.connect('mongodb://localhost/test');
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
