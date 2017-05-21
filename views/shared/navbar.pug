@@ -3,7 +3,7 @@ nav.nav
   .nav-left
     a.nav-item.nav-brand(href='/') microFB
     a.nav-tem.notify
-      .notification.show-count(data-count='10')
+      .notification-icon.show-count(data-count='10')
     .notification-box.box
       ul
         li.invite-content
@@ -45,5 +45,5 @@ nav.nav
   .nav-right.nav-menu#nav-menu
     a(href='/profile/me').nav-item
       | Profile
-    a(href='/auth/logout').nav-item
+    a(href='/auth/logout')#logOut.nav-item
       | Log Out

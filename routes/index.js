@@ -6,14 +6,20 @@ var Promise = require("bluebird");
 
 router.get('/', function (req, res, next) {
   if (!req.user) res.redirect('/auth/login');
-  else res.render('index', {user: req.user});
+  else {
+    User.findById(req.user).populate('friends').then(user => {
+      res.render('index', {user: user});
+    });
+  }
 });
+
+
 router.get('/posts', (req, res) => {
   User.findOne({username: "meow"}).then(user => {
 
     var post = new Post({
       content: "Once upon a timex.",
-      _creator: user._id    // assign the _id from the person
+      _creator: user._id
     });
 
     post.save(function (err) {
@@ -22,6 +28,7 @@ router.get('/posts', (req, res) => {
     });
   })
 });
+
 router.get('/like', (req, res) => {
   Post.findOne({}).then(post => {
     post.likes.push(req.user._id);
@@ -30,12 +37,15 @@ router.get('/like', (req, res) => {
     })
   })
 });
+
 router.get('/friend', (req, res) => {
   Promise.all([User.findOne({username: "kociak"}), User.findById(req.user._id)])
       .spread((user1, user2) => {
         user1.friends.push(user2._id);
         user2.friends.push(user1._id);
-        Promise.all([user1.save(),user2.save()]);
+        Promise.all([user1.save(), user2.save()]).catch(err => {
+          throw err;
+        });
 
       })
       .then(() => {
@@ -44,6 +54,10 @@ router.get('/friend', (req, res) => {
       .catch(err => {
         throw err;
       });
+});
+
+router.get('/onlineUsers', (req, res) => {
 
 });
+
 module.exports = router;

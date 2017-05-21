@@ -23,6 +23,7 @@ var auth = require('./routes/auth');
 
 var app = express();
 
+//nie działa na windowsowym redisie
 // app.set('sessionStore', new RedisStore({
 //   url: 'redis://meow:6f422b82fb841f5a753da69f4aa3bed9',
 //   host: '50.30.35.9',
@@ -31,7 +32,9 @@ var app = express();
 //   client: require('redis').createClient(),
 //   ttl:  260
 // }));
+
 app.set('sessionStore', new MongoStore({ mongooseConnection: mongoose.connection }));
+
 const sessionSecret = 'wielkiCzarnyKot';
 const sessionKey = 'express.sid';
 
@@ -49,7 +52,6 @@ app.use(expressValidator());
 app.use(session({
   key: sessionKey,
   secret: sessionSecret,
-  //nie działa na windowsowym redisie
   store: app.get('sessionStore'),
   resave: false,
   saveUninitialized: true,

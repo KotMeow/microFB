@@ -7,7 +7,10 @@
 var app = require('../app');
 var debug = require('debug')('microfb:server');
 var http = require('http');
-
+var socketio = require('socket.io');
+var User = require('../models/user');
+var passportSocketIo = require("passport.socketio");
+var Promise = require("bluebird");
 /**
  * Get port from environment and store in Express.
  */
@@ -26,7 +29,15 @@ var server = http.createServer(app);
  */
 
 server.listen(port);
-require('./sockets').listen(server, app.get('sessionStore'));
+io = socketio(server);
+
+io.use(passportSocketIo.authorize({
+  key: 'express.sid',
+  secret: 'wielkiCzarnyKot',
+  store: app.get('sessionStore'),
+}));
+
+require('./sockets').listen(io);
 server.on('error', onError);
 server.on('listening', onListening);
 

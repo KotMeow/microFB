@@ -1,24 +1,19 @@
 extends layout
 
 block content
+  script(src='/javascripts/sockets.js')
+  script(src='javascripts/notification.button.js')
+  script(src='javascripts/navbar.js')
   include ./shared/navbar
   nav.sidebar
     ul#friend-list
-      li
-        div.online KK
-        div Kamil Kot
-        span.icon
-          i.fa.fa-envelope-o
-      li
-        div.offline KI
-        div Ktos inny
-        span.icon
-          i.fa.fa-envelope-o
-      li
-        div.online JK
-        div Jeszcze ktos
-        span.icon
-          i.fa.fa-envelope-o
+      each friend in user.friends
+        li
+          div.offline(id= "" + friend.username)= friend.username.slice(0,2).toUpperCase()
+          div= friend.username
+          span.icon
+            i.fa.fa-envelope-o
+
   .container
     h1= user.username
     button#butt Butt
@@ -75,4 +70,4 @@ block content
                       span.icon.is-small
                         i.fa.fa-heart
                     span(style="margin-left: -10px; font-weight: 600")= val
-  script(src='/javascripts/button.js')
+
