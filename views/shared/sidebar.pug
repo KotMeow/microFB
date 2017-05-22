@@ -1,0 +1,10 @@
+nav.sidebar
+  ul#friend-list
+    each friend in user.friends
+      li
+        div.status.offline(id= "" + friend.username)= friend.username.slice(0, 2).toUpperCase()
+        div= friend.username
+        span.icon.action-icons
+          i.fa.fa-envelope-o
+          a(href='/profile/' + friend.username)
+            i.fa.fa-user-o

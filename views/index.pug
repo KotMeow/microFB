@@ -5,15 +5,7 @@ block content
   script(src='javascripts/notification.button.js')
   script(src='javascripts/navbar.js')
   include ./shared/navbar
-  nav.sidebar
-    ul#friend-list
-      each friend in user.friends
-        li
-          div.offline(id= "" + friend.username)= friend.username.slice(0,2).toUpperCase()
-          div= friend.username
-          span.icon
-            i.fa.fa-envelope-o
-
+  include ./shared/sidebar
   .container
     h1= user.username
     button#butt Butt

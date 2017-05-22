@@ -1,37 +1,23 @@
-
 nav.nav
   .nav-left
     a.nav-item.nav-brand(href='/') microFB
     a.nav-tem.notify
-      .notification-icon.show-count(data-count='10')
+      .notification-icon.show-count
     .notification-box.box
-      ul
-        li.invite-content
-          | Kamil Kot sent you an invite
-          a
-            span.icon
-              i.fa.fa-times
-          a.accept
-            span.icon
-              i.fa.fa-check
-        hr.new.new-notification
-        li.invite-content
-          | Kamil Kot sent you an invite
-          a
-            span.icon
-              i.fa.fa-times
-          a.accept
-            span.icon
-              i.fa.fa-check
-        hr
-        li.invite-content
-          | Kamil Kot sent you an invite
-          a
-            span.icon
-              i.fa.fa-times
-          a.accept
-            span.icon
-              i.fa.fa-check
+      ul#notification-list
+        if user.invites.length === 0
+          li#no-invites No invites
+        else
+          each invite in user.invites
+            li.invite-content
+              | #{invite.username} sent you an invite
+              a.decline(data-username=invite.username)
+                span.icon
+                  i.fa.fa-times
+              a.accept(data-username=invite.username)
+                span.icon
+                  i.fa.fa-check
+              hr
   .nav-center
     a.nav-item(href="http://www.github.com/kotmeow")
       span.icon
@@ -43,7 +29,8 @@ nav.nav
   // This "nav-menu" is hidden on mobile
   // Add the modifier "is-active" to display it on mobile
   .nav-right.nav-menu#nav-menu
-    a(href='/profile/me').nav-item
-      | Profile
+    input.input.nav-item.user-search-input(type='text')
+    a(href='/profile/' + user.username).nav-item
+      | Me
     a(href='/auth/logout')#logOut.nav-item
       | Log Out

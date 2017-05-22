@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  script(src='/javascripts/sockets.js')
+  script(src='/javascripts/notification.button.js')
+  script(src='/javascripts/navbar.js')
+  include ./shared/navbar
+  include ./shared/sidebar
+  section.hero.is-dark
+    .hero-body
+      .container
+        h1.title.is-1.capitalize
+          | #{profile.username}
+        h2.subtitle.is-5
+          | #{profile.email}
+        h3.subtitle
+          unless friends
+            span.icon
+              i.fa.fa-user-plus#invite(data-username="" +profile.username)

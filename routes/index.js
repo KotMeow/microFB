@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 router.get('/', function (req, res, next) {
   if (!req.user) res.redirect('/auth/login');
   else {
-    User.findById(req.user).populate('friends').then(user => {
+    User.findById(req.user).populate('friends invites').then(user => {
       res.render('index', {user: user});
     });
   }

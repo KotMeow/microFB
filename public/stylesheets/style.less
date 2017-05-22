@@ -53,10 +53,11 @@ a {
  }
 a:hover {
   text-decoration: none;
-  color: red;
+  color: inherit;
 }
 
 .nav {
+  height: 60px;
   box-shadow: 0 0 8px #777;
   margin-bottom: 20px;
 }
@@ -73,7 +74,7 @@ div.media-content {
 //}
 nav.sidebar {
   position: fixed;
-  top: 75px;
+  top: 72px;
   right: 0;
   width: 3.5rem;
   background: @green;
@@ -84,14 +85,12 @@ nav.sidebar {
   box-shadow: 0px 0px 10px #333;
   ul {
     display: table;
-    width: 14rem;
+    width: 18rem;
     li {
       color: #fff;
       display: table-row;
       background: @blue;
-      cursor: pointer;
       div {
-        height: 3.5rem;
         line-height: 3.5rem;
         display: table-cell;
       }
@@ -103,7 +102,7 @@ nav.sidebar {
         content: "";
         display: inline-block;
         height: 8px;
-        margin: 0 8px 2px 0;
+        margin: 0 5px 1px 0;
         width: 8px;
       }
       div.offline:before {
@@ -114,7 +113,7 @@ nav.sidebar {
         content: "";
         display: inline-block;
         height: 8px;
-        margin: 0 8px 2px 0;
+        margin: 0 5px 1px 0;
         width: 8px;
       }
 
@@ -128,7 +127,7 @@ nav.sidebar {
   }
 }
 nav.sidebar:hover {
-  width: 14rem;
+  width: 18rem;
 }
 nav.sidebar > ul > li > div:nth-child(1) {
   width: 3.5rem;
@@ -159,11 +158,12 @@ nav.sidebar > ul > li > div:nth-child(2) {
 .notification-icon {
   right: 10px;
   display: inline-block;
-  top: 2px;
+  top: 5px;
   position: relative;
   padding: 0.6em;
   background: inherit;
   color: @grey;
+
 }
 
 .notification-icon:hover {
@@ -178,38 +178,31 @@ nav.sidebar > ul > li > div:nth-child(2) {
   transform-origin: top center;
 }
 
-.notification-icon::after {
-  font-size: 0.8rem;
-  font-weight: 500;
-  position: absolute;
-  bottom: 20px;
-  margin-left: 2px;
-  padding: 5px 8px;
-  line-height: 100%;
-  opacity: 0;
-  content: attr(data-count);
-  color: @primary;
-  opacity: 0;
-}
-
-.notification-icon.show-count::after {
-  opacity: 1;
-}
-
 
 .notification-box {
-  top: 60px;
+  top: 45px;
+  left: 110px;
   position: absolute;
   display: none;
 }
-
-.fa-envelope-o:hover {
+.sidebar a:hover {
+  color: inherit;
+}
+.fa-envelope-o:hover, .fa-user-o:hover {
   color: @primary;
 }
-.fa-envelope-o {
-  margin-right: 40px;
+.action-icons {
+  padding-right: 20px;
 }
-
+.fa-envelope-o {
+  margin-left: 10px;
+  cursor: pointer;
+}
+.fa-user-o {
+  margin-top: 2px;
+  cursor: pointer;
+  margin-left: 10px;
+}
 hr {
   margin: 5px;
 }
@@ -220,4 +213,25 @@ hr {
 
 .invite-content a.accept:hover {
   color: @green;
+}
+.invite-content a.decline:hover {
+  color: @red;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.fa-user-plus:hover {
+  cursor: pointer;
+  color: @primary;
+}
+
+#nav-toggle {
+  margin-top: 5px;
+}
+
+.user-search-input {
+  margin-top: 12px;
+  width: 300px;
 }
