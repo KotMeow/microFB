@@ -22,7 +22,7 @@ var profile = require('./routes/profile');
 var auth = require('./routes/auth');
 
 var app = express();
-
+app.locals.moment = require('moment');
 //nie działa na windowsowym redisie
 // app.set('sessionStore', new RedisStore({
 //   url: 'redis://meow:6f422b82fb841f5a753da69f4aa3bed9',

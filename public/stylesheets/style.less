@@ -7,7 +7,7 @@
 @grey: #7a7a7a;
 html { overflow-y: auto; }
 body {
-  min-height: 100vh;
+  height: 100%;
 }
 
 a {
@@ -242,4 +242,18 @@ hr {
   right: 128px;
   position: absolute;
   display: none;
+}
+nav.level {
+  margin-top: -90px;
+  @media (max-width: 768px) {
+    margin-top: 0;
+  }
+}
+
+.post-input {
+  resize: none;
+}
+
+.margin-50 {
+  margin-top: 50px;
 }

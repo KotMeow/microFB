@@ -15,12 +15,11 @@ router.get('/me', (req, res, next) => {
     res.send(users);
   })
 });
-
 router.get('/:username', (req, res) => {
   if (!req.user) res.redirect('/auth/login');
   else {
     Promise.all([User.findById(req.user).populate('friends invites'), User.findOne({username: req.params.username})])
-        .spread((user, profile) => {
+        .spread((user, profile, posts) => {
           let friends = false;
           user.friends.forEach(friend => {
             if (friend.username === profile.username) friends = true;
@@ -28,12 +27,15 @@ router.get('/:username', (req, res) => {
           user.invites.forEach(friend => {
             if (friend.username === profile.username) friends = true;
           });
-          res.render('profile', {user: user, profile: profile, friends: friends})
+          if (req.user.username === user.username) friends = true;
+          Post.find({_creator: profile}).populate('_creator').then(posts => {
+            res.render('profile', {user: user, profile: profile, friends: friends, posts: posts})
+          });
         });
   }
 });
 router.get('/search/:name', (req, res) => {
-  User.find({username : {$regex : `.*${req.params.name}.*`, $options : 'i'}}).then(users => {
+  User.find({username: {$regex: `.*${req.params.name}.*`, $options: 'i'}}).then(users => {
     console.log(req.user.username);
     users.forEach((user, index) => {
       if (user.username.toLowerCase() === req.user.username.toLowerCase()) {

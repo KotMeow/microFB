@@ -1,11 +1,13 @@
 var socketio = require('socket.io');
 var User = require('../models/user');
+var Post = require('../models/post');
 var passportSocketIo = require("passport.socketio");
 var Promise = require("bluebird");
 
 module.exports.listen = function (io) {
 
   io.on('connection', function (socket) {
+
     socket.on('message', function (data) {
       console.log('message');
       User.findOne({username: socket.request.user.username}).populate('friends').then(user => {
@@ -47,10 +49,10 @@ module.exports.listen = function (io) {
           console.log('Already invited');
         }
         else {
-        user.invites.push(socket.request.user._id);
-        user.save().then(() => {
-          io.in(user.username).emit('invite', {from: socket.request.user.username});
-        });
+          user.invites.push(socket.request.user._id);
+          user.save().then(() => {
+            io.in(user.username).emit('invite', {from: socket.request.user.username});
+          });
         }
       });
     });
@@ -87,8 +89,27 @@ module.exports.listen = function (io) {
             user.invites.splice(element, 1);
             user.save();
           }).catch(e => {
-            console.log(e);
+        console.log(e);
       });
+    });
+
+    socket.on('newpost', data => {
+      User.findById(socket.request.user).populate('friends')
+          .then(user => {
+            var post = new Post({
+              content: data,
+              _creator: user._id
+            });
+            post.save().then(post => {
+              user.friends.forEach(friend => {
+                io.in(friend.username).emit('newpost', {post: post, author: user.username});
+              });
+              io.in(user.username).emit('newpost', {post: post, author: user.username});
+            });
+          })
+          .catch(err => {
+            console.log(err);
+          });
     });
   });
 

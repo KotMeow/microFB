@@ -8,12 +8,39 @@ block content
   include ./shared/sidebar
   section.hero.is-dark
     .hero-body
-      .container
+      .container.has-text-centered
         h1.title.is-1.capitalize
           | #{profile.username}
         h2.subtitle.is-5
           | #{profile.email}
+        nav.level
+          .level-item.has-text-centered
+            div
+              p.heading Posts
+              p.title= posts.length
+          .level-item.has-text-centered
+            div
+              p.heading Likes
+              p.title ?
         h3.subtitle
           unless friends
             span.icon
               i.fa.fa-user-plus#invite(data-username="" +profile.username)
+  .container.margin-50
+    .columns.is-mobile.is-multiline
+      each post in posts
+        .column.is-12
+          .card
+            .card-content
+              .media
+                .media-left
+                  figure.image.is-48x48.is-4by3
+                    img(src='/images/mount.jpg', alt='Image')
+                .media-content
+                  p.title.is-4=post._creator.username
+                  p.subtitle.is-6= moment(post.date).fromNow()
+              .content= post.content
+  //ul
+  //  each post in posts
+  //    li=post.content
+

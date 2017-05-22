@@ -7,73 +7,24 @@ block content
   include ./shared/navbar
   include ./shared/sidebar
   .container
-    h1= user.username
     button#butt Butt
+    h1.title.is-1 Share some thoughts #{user.username}!
     .columns.is-mobile.is-multiline
-      each val in [12,2,2,2,3]
+      .column.is-10
+        .field
+          p.control
+            textarea.textarea.post-input(placeholder='Write something!')
+            button.button.is-primary.is-fullwidth#sendPost Post!
+    .columns.is-mobile.is-multiline#posts-container
+      each post in posts
         .column.is-10
           .card
-            .card-image
-              figure.image
-                img(src='/images/mount.jpg', alt='Image')
             .card-content
               .media
                 .media-left
-                  figure.image.is-48x48
-                    img(src='https://scontent.fwaw5-1.fna.fbcdn.net/v/t1.0-9/14705663_1139212169458500_5947085306553102567_n.jpg?oh=143130e08d1cc4651c88b198048a2c1d&oe=59BDE55C', alt='Image')
+                  figure.image.is-48x48.is-4by3
+                    img(src='/images/mount.jpg', alt='Image')
                 .media-content
-                  p.title.is-4 John Smith
-                  p.subtitle.is-6 11:09 PM - 1 Jan 2016
-              .content
-                | Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                | Phasellus nec iadasdasdasdculis mauris.
-                | Lorem ipsum dolor sit amet, consecasdasdasdtetur adipiscing elit.
-                | Phasellus nec dadsad mauris.
-                | Lordadsadem ipsum dolor sit amet, consectetasdasdasdsadaur adipiscing elit.
-                | Phasellus nec iaculis maasdsadasduris.
-            footer.card-footer
-              a.card-footer-item Save
-              a.card-footer-item Edit
-              a.card-footer-item Delete
-      .column.is-10
-        .card
-          .card-content
-            .media
-              .media-left
-                figure.image.is-48x48
-                  img(src='https://scontent.fwaw5-1.fna.fbcdn.net/v/t1.0-9/14705663_1139212169458500_5947085306553102567_n.jpg?oh=143130e08d1cc4651c88b198048a2c1d&oe=59BDE55C', alt='Image')
-              .media-content
-                p.title.is-4 John Smith
-                p.subtitle.is-6 11:09 PM - 1 Jan 2016
-            .content
-              | Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              | Phasellus nec iadasdasdasdculis mauris.
-              | Lorem ipsum dolor sit amet, consecasdasdasdtetur adipiscing elit.
-              | Phasellus nec dadsad mauris.
-              | Lordadsadem ipsum dolor sit amet, consectetasdasdasdsadaur adipiscing elit.
-              | Phasellus nec iaculis maasdsadasduris.
-          footer.card-footer
-            a.card-footer-item Save
-            a.card-footer-item Edit
-            a.card-footer-item Delete
-      .column.is-6
-        .card
-          .card-content
-            .media
-              .media-left
-                figure.image.is-48x48
-                  img(src='https://scontent.fwaw5-1.fna.fbcdn.net/v/t1.0-9/14705663_1139212169458500_5947085306553102567_n.jpg?oh=143130e08d1cc4651c88b198048a2c1d&oe=59BDE55C', alt='Image')
-              .media-content
-                p.title.is-4 John Smith
-                p.subtitle.is-6 11:09 PM - 1 Jan 2016
-            .content
-              | Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              | Phasellus nec iadasdasdasdculis mauris.
-              | Lorem ipsum dolor sit amet, consecasdasdasdtetur adipiscing elit.
-              | Phasellus nec dadsad mauris.
-              | Lordadsadem ipsum dolor sit amet, consectetasdasdasdsadaur adipiscing elit.
-              | Phasellus nec iaculis maasdsadasduris.
-          footer.card-footer
-            a.card-footer-item Save
-            a.card-footer-item Edit
-            a.card-footer-item Delete
+                  p.title.is-4=post._creator.username
+                  p.subtitle.is-6= moment(post.date).fromNow()
+              .content= post.content

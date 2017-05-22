@@ -2,9 +2,14 @@ $(function () {
 
   var socket = io();
   socket.emit('join');
-  var friendlist = $('#friend-list');
-  var noinvites = $('#no-invites');
-  var notificationList = $("#notification-list");
+
+  let friendlist = $('#friend-list');
+  let noinvites = $('#no-invites');
+  let notificationList = $("#notification-list");
+  let postButton = $('#sendPost');
+  let postInput = $('.post-input');
+  let postContainer = $('#posts-container');
+
   let checkInvites = function () {
     $(this).parents('li').fadeOut(300, function () {
       $(this.remove());
@@ -48,7 +53,7 @@ $(function () {
     $('#' + data.username).removeClass('online').addClass('offline');
   });
   socket.on('onlineUsers', data => {
-    friendlist.find('div.status').each((key,obj) => {
+    friendlist.find('div.status').each((key, obj) => {
       $(obj).removeClass('online').addClass('offline');
     });
     data.forEach(value => {
@@ -64,6 +69,18 @@ $(function () {
   socket.on('accept', data => {
     console.log(data);
     friendlist.append(`<li><div class="online">${data.slice(0, 2).toUpperCase()}</div><div>${data}</div>
-<span class="icon action-icons"><i class="fa fa-envelope-o"></i><a href="/profile/${data}"><i class="fa fa-user-o"></i></a></span></li>`);
+    <span class="icon action-icons"><i class="fa fa-envelope-o"></i><a href="/profile/${data}"><i class="fa fa-user-o"></i></a></span></li>`);
+  });
+
+  postButton.on('click', function () {
+    socket.emit('newpost', postInput.val());
+
+  });
+
+  socket.on('newpost', data => {
+    postContainer.prepend(`<div class="column is-10 animated zoomIn"><div class="card"><div class="card-content"><div class="media">
+    <div class="media-left"><figure class="image is-48x48 is-4by3"><img src="/images/mount.jpg" alt="Image"></figure></div>
+    <div class="media-content"><p class="title is-4"><a href="/profile/${data.author}">${data.author}</a></p><p class="subtitle is-6">Just now</p></div></div>
+    <div class="content">${data.post.content}</div></div></div></div>`);
   });
 });

@@ -3,30 +3,40 @@ var router = express.Router();
 var User = require('../models/user');
 var Post = require('../models/post');
 var Promise = require("bluebird");
+var moment = require("moment");
+var _ = require('lodash');
 
 router.get('/', function (req, res, next) {
   if (!req.user) res.redirect('/auth/login');
   else {
     User.findById(req.user).populate('friends invites').then(user => {
-      res.render('index', {user: user});
+      let friends = [];
+      let posts = [];
+
+      user.friends.forEach(friend => {
+        friends.push(friend._id);
+      });
+      friends.push(req.user._id);
+      Promise.reduce(friends, function(total, friend) {
+        return Post.find({_creator : friend}).populate('_creator').then(function(post) {
+          post.forEach(po => {
+            posts.push(po);
+          });
+          return posts;
+        });
+      }, 0).then(function(total) {
+        total = _.sortBy(total, function(o) {
+          return new moment(o.date);
+        }).reverse();
+        res.render('index', {user: user, posts: total});
+      });
     });
   }
 });
 
+router.get('/posty', (req,res) => {
 
-router.get('/posts', (req, res) => {
-  User.findOne({username: "meow"}).then(user => {
 
-    var post = new Post({
-      content: "Once upon a timex.",
-      _creator: user._id
-    });
-
-    post.save(function (err) {
-      if (err) return res.send(err);
-      else res.send(user);
-    });
-  })
 });
 
 router.get('/like', (req, res) => {
@@ -54,10 +64,6 @@ router.get('/friend', (req, res) => {
       .catch(err => {
         throw err;
       });
-});
-
-router.get('/onlineUsers', (req, res) => {
-
 });
 
 module.exports = router;
