@@ -30,6 +30,9 @@ nav.nav
   // Add the modifier "is-active" to display it on mobile
   .nav-right.nav-menu#nav-menu
     input.input.nav-item.user-search-input(type='text')
+    .box.search-box.content
+      table
+        tbody#searchResult
     a(href='/profile/' + user.username).nav-item
       | Me
     a(href='/auth/logout')#logOut.nav-item

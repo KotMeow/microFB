@@ -33,14 +33,13 @@ router.get('/:username', (req, res) => {
   }
 });
 router.get('/search/:name', (req, res) => {
-  User.find({username : {$regex : `.*${req.params.name}.*`}}).then(users => {
+  User.find({username : {$regex : `.*${req.params.name}.*`, $options : 'i'}}).then(users => {
     console.log(req.user.username);
     users.forEach((user, index) => {
-      if (user.username === req.user.username) {
+      if (user.username.toLowerCase() === req.user.username.toLowerCase()) {
         users.splice(index, 1);
       }
     });
-    console.log(users);
     res.send(users);
   });
 });

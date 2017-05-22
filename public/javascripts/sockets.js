@@ -12,7 +12,7 @@ $(function () {
     });
   };
   $('#butt').on('click', () => {
-    $('.notification-icon').addClass('animated wobble').css('color', '#00d1b2');
+    $('.notification-icon').addClass('animated bounce').css('color', '#00d1b2');
     // socket.emit('message', {
     //   age: 15
     // });
@@ -33,7 +33,7 @@ $(function () {
   });
 
   $('.notification-icon').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
-    $('.notification-icon').removeClass('animated wobble');
+    $('.notification-icon').removeClass('animated bounce');
   });
   $('#invite').on('click', function () {
     socket.emit('invite', $(this).data().username)
