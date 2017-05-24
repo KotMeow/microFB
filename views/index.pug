@@ -21,10 +21,8 @@ block content
           .card
             .card-content
               .media
-                .media-left
-                  figure.image.is-48x48.is-4by3
-                    img(src='/images/mount.jpg', alt='Image')
                 .media-content
-                  p.title.is-4=post._creator.username
+                  p.title.is-4
+                    a(href='/profile/' + post._creator.username)= post._creator.username === user.username ?  'Me' : post._creator.username
                   p.subtitle.is-6= moment(post.date).fromNow()
               .content= post.content

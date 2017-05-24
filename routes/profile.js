@@ -18,18 +18,19 @@ router.get('/me', (req, res, next) => {
 router.get('/:username', (req, res) => {
   if (!req.user) res.redirect('/auth/login');
   else {
-    Promise.all([User.findById(req.user).populate('friends invites'), User.findOne({username: req.params.username})])
+    Promise.all([User.findById(req.user).populate('friends invites'), User.findOne({username: req.params.username}).populate('invites')])
         .spread((user, profile, posts) => {
           let friends = false;
+          let inviteSent = false;
           user.friends.forEach(friend => {
-            if (friend.username === profile.username) friends = true;
+            if (friend.username.localeCompare(profile.username) === 0) friends = true;
           });
-          user.invites.forEach(friend => {
-            if (friend.username === profile.username) friends = true;
+          profile.invites.forEach(friend => {
+            if (friend.username.localeCompare(user.username) === 0) inviteSent = true;
           });
-          if (req.user.username === user.username) friends = true;
+          if (req.user.username.localeCompare(profile.username) === 0) friends = true;
           Post.find({_creator: profile}).populate('_creator').then(posts => {
-            res.render('profile', {user: user, profile: profile, friends: friends, posts: posts})
+            res.render('profile', {user: user, profile: profile, friends: friends, inviteSent: inviteSent, posts: posts})
           });
         });
   }

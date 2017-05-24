@@ -2,7 +2,7 @@ nav.nav
   .nav-left
     a.nav-item.nav-brand(href='/') microFB
     a.nav-tem.notify
-      .notification-icon.show-count
+      .notification-icon(class = user.invites.length === 0 ? ' ' : 'notify-color')
     .notification-box.box
       ul#notification-list
         if user.invites.length === 0
@@ -33,7 +33,7 @@ nav.nav
     .box.search-box.content
       table
         tbody#searchResult
-    a(href='/profile/' + user.username).nav-item
-      | Me
+    a(href='/profile/' + user.username).nav-item.capitalize
+      | #{user.username}
     a(href='/auth/logout')#logOut.nav-item
       | Log Out

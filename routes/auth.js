@@ -19,7 +19,6 @@ router.get('/logout', authController.logout);
 
 router.post('/checkexist', (req,res) => {
   User.find({username: req.body.username}).then(data => {
-    console.log(data);
     res.send(data)
   });
 });

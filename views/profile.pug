@@ -23,23 +23,24 @@ block content
               p.heading Likes
               p.title ?
         h3.subtitle
-          unless friends
+          unless friends || inviteSent
             span.icon
               i.fa.fa-user-plus#invite(data-username="" +profile.username)
   .container.margin-50
     .columns.is-mobile.is-multiline
-      each post in posts
-        .column.is-12
-          .card
-            .card-content
-              .media
-                .media-left
-                  figure.image.is-48x48.is-4by3
-                    img(src='/images/mount.jpg', alt='Image')
-                .media-content
-                  p.title.is-4=post._creator.username
-                  p.subtitle.is-6= moment(post.date).fromNow()
-              .content= post.content
+      if friends
+        each post in posts
+          .column.is-12
+            .card
+              .card-content
+                .media
+                  .media-left
+                    figure.image.is-48x48.is-4by3
+                      img(src='/images/mount.jpg', alt='Image')
+                  .media-content
+                    p.title.is-4=post._creator.username
+                    p.subtitle.is-6= moment(post.date).fromNow()
+                .content= post.content
   //ul
   //  each post in posts
   //    li=post.content

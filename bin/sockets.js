@@ -61,7 +61,6 @@ module.exports.listen = function (io) {
       let element;
       Promise.all([User.findOne({username: data}), User.findById(socket.request.user).populate('invites')])
           .spread((user1, user2) => {
-            console.log(user2);
             user1.friends.push(user2._id);
             user2.friends.push(user1._id);
             user2.invites.forEach((invite, index) => {
@@ -69,7 +68,6 @@ module.exports.listen = function (io) {
             });
             user2.invites.splice(element, 1);
             Promise.all([user1.save(), user2.save()]).then(() => {
-              console.log('save');
               io.in(user1.username).emit('accept', user2.username);
               io.in(user2.username).emit('accept', user1.username);
             })
@@ -104,7 +102,7 @@ module.exports.listen = function (io) {
               user.friends.forEach(friend => {
                 io.in(friend.username).emit('newpost', {post: post, author: user.username});
               });
-              io.in(user.username).emit('newpost', {post: post, author: user.username});
+              io.in(user.username).emit('newpost', {post: post, author: user.username, user: socket.request.user.username});
             });
           })
           .catch(err => {

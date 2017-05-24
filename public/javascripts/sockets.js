@@ -41,7 +41,14 @@ $(function () {
     $('.notification-icon').removeClass('animated bounce');
   });
   $('#invite').on('click', function () {
-    socket.emit('invite', $(this).data().username)
+    socket.emit('invite', $(this).data().username);
+    $('body').append(`<div class="animated fadeInLeft notification is-success invite-notification">
+    Invite sent successfully
+    </div>`);
+    setTimeout(function () {
+      $('.invite-notification').addClass('fadeOutLeft')
+    }, 4000);
+    $(this).hide();
   });
   socket.on('message', function (data) {
     friendlist.append(`<li><div class="online">${data.init}</div><div>${data.name}</div></li>`);
@@ -74,13 +81,41 @@ $(function () {
 
   postButton.on('click', function () {
     socket.emit('newpost', postInput.val());
-
   });
 
   socket.on('newpost', data => {
-    postContainer.prepend(`<div class="column is-10 animated zoomIn"><div class="card"><div class="card-content"><div class="media">
-    <div class="media-left"><figure class="image is-48x48 is-4by3"><img src="/images/mount.jpg" alt="Image"></figure></div>
-    <div class="media-content"><p class="title is-4"><a href="/profile/${data.author}">${data.author}</a></p><p class="subtitle is-6">Just now</p></div></div>
-    <div class="content">${data.post.content}</div></div></div></div>`);
+    var column = document.createElement('div');
+    column.className = 'column is-10 animated zoomIn';
+    var card = document.createElement('div');
+    card.className = 'card';
+    var cardContent = document.createElement('div');
+    cardContent.className = 'card-content';
+    var media = document.createElement('div');
+    media.className = 'media';
+    var content = document.createElement('div');
+    content.className = 'content';
+    content.innerText = data.post.content;
+    var mediaContent = document.createElement('div');
+    mediaContent.className = 'media-content';
+    var pAuthor = document.createElement('p');
+    pAuthor.className = 'title is-4';
+    pAuthor.innerText = data.author === data.user ? 'Me' : data.author;
+    var aAuthor = document.createElement('a');
+    aAuthor.setAttribute('href', "/profile/" + data.author);
+    var pDate = document.createElement('p');
+    pDate.className = 'subtitle is-6';
+    pDate.innerText = 'Just now';
+
+
+    pAuthor.appendChild(aAuthor);
+    mediaContent.appendChild(pAuthor);
+    mediaContent.appendChild(pDate);
+    media.appendChild(mediaContent);
+    cardContent.appendChild(media);
+    cardContent.appendChild(content);
+    card.appendChild(cardContent);
+    column.appendChild(card);
+
+    postContainer.prepend(column);
   });
 });
