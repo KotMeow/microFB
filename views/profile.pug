@@ -27,18 +27,27 @@ block content
             span.icon
               i.fa.fa-user-plus#invite(data-username="" +profile.username)
   .container.margin-50
+    h1.title.is-2 Write something on #{profile.username} wall
     .columns.is-mobile.is-multiline
+      .column.is-10
+        .field
+          p.control
+            textarea.textarea.post-touser-input(placeholder='Write something to ' + profile.username + '!')
+            button.button.is-primary.is-fullwidth#sendPostToUser(data-user = profile._id, data-username = profile.username ) Post!
+    .columns.is-mobile.is-multiline#posts-container
       if friends
         each post in posts
-          .column.is-12
+          .column.is-10
             .card
               .card-content
                 .media
-                  .media-left
-                    figure.image.is-48x48.is-4by3
-                      img(src='/images/mount.jpg', alt='Image')
                   .media-content
-                    p.title.is-4=post._creator.username
+                    p.title.is-4
+                      a.from(href='/profile/' + post._creator.username)= post._creator.username === user.username ? 'Me' : post._creator.username
+                      if post.to
+                        span.icon
+                          i.fa.fa-angle-double-right
+                        a.to(href='/profile/' + post.to.username)= post.to.username === user.username ? 'Me' : post.to.username
                     p.subtitle.is-6= moment(post.date).fromNow()
                 .content= post.content
   //ul

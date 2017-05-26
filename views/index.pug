@@ -23,6 +23,10 @@ block content
               .media
                 .media-content
                   p.title.is-4
-                    a(href='/profile/' + post._creator.username)= post._creator.username === user.username ?  'Me' : post._creator.username
+                    a.from(href='/profile/' + post._creator.username)= post._creator.username === user.username ?  'Me' : post._creator.username
+                    if post.to
+                      span.icon
+                        i.fa.fa-angle-double-right
+                      a.to(href='/profile/' + post.to.username)= post.to.username === user.username ?  'Me' : post.to.username
                   p.subtitle.is-6= moment(post.date).fromNow()
               .content= post.content

@@ -1,0 +1,13 @@
+.column.is-10.animated.zoomIn
+  .card
+    .card-content
+      .media
+        .media-content
+          p.title.is-4
+            a.from(href='/profile/' + author)= author === user ? 'Me' : author
+            if post.to
+              span.icon
+                i.fa.fa-angle-double-right
+              a.to(href='/profile/' + to)= to === user ? 'Me' : to
+          p.subtitle.is-6 Just now
+      .content= post.content

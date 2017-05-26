@@ -2,20 +2,26 @@ var passport = require('passport');
 
 var authController = function (User) {
 
-  let getLogin = (req, res, next) => {
+  let getLogin = (req, res) => {
     res.render('auth/login');
   };
 
   let postLogin = (req, res, next) => {
     passport.authenticate('local', (err, user) => {
-      if (err) res.send(err);
-      else if (!user) res.render('auth/login', {error: 'Invalid username/password'});
+      if (err) {
+        res.send(err);
+      }
+      else if (!user) {
+        res.render('auth/login', {error: 'Invalid username/password'});
+      }
       else {
         req.logIn(user, err => {
           if (err) {
             return next(err);
           }
-          else res.redirect('/')
+          else {
+            res.redirect('/');
+          }
         });
       }
     })(req, res, next);
@@ -79,7 +85,7 @@ var authController = function (User) {
     getRegister: getRegister,
     postRegister: postRegister,
     logout: logout
-  }
+  };
 };
 
 module.exports = authController;

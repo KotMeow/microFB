@@ -5,9 +5,13 @@ var Post = require('../models/post');
 var Promise = require("bluebird");
 var moment = require("moment");
 var _ = require('lodash');
+var pug = require('pug');
+var path = require('path');
 
-router.get('/', function (req, res, next) {
-  if (!req.user) res.redirect('/auth/login');
+router.get('/', function (req, res) {
+  if (!req.user) {
+    res.redirect('/auth/login');
+  }
   else {
     User.findById(req.user).populate('friends invites').then(user => {
       let friends = [];
@@ -18,7 +22,7 @@ router.get('/', function (req, res, next) {
       });
       friends.push(req.user._id);
       Promise.reduce(friends, function(total, friend) {
-        return Post.find({_creator : friend}).populate('_creator').then(function(post) {
+        return Post.find({_creator : friend}).populate('_creator to').then(function(post) {
           post.forEach(po => {
             posts.push(po);
           });
@@ -34,36 +38,24 @@ router.get('/', function (req, res, next) {
   }
 });
 
-router.get('/posty', (req,res) => {
-
-
-});
-
 router.get('/like', (req, res) => {
   Post.findOne({}).then(post => {
     post.likes.push(req.user._id);
     post.save().then(() => {
       res.send(post);
-    })
-  })
+    });
+  });
+
 });
 
-router.get('/friend', (req, res) => {
-  Promise.all([User.findOne({username: "kociak"}), User.findById(req.user._id)])
-      .spread((user1, user2) => {
-        user1.friends.push(user2._id);
-        user2.friends.push(user1._id);
-        Promise.all([user1.save(), user2.save()]).catch(err => {
-          throw err;
-        });
+router.get('/shared', (req, res) => {
 
+  User.findOne({})
+      .then(user => {
+        return Post.find().populate('sharedBy');
       })
-      .then(() => {
-        res.send('ok');
-      })
-      .catch(err => {
-        throw err;
+      .then(posts => {
+        res.send(posts);
       });
 });
-
 module.exports = router;

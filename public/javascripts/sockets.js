@@ -9,22 +9,36 @@ $(function () {
   let postButton = $('#sendPost');
   let postInput = $('.post-input');
   let postContainer = $('#posts-container');
+  let postToUserButton = $('#sendPostToUser');
+  let postToUserInput = $('.post-touser-input');
 
+  //delete animation class for notifications
+
+  $('.notification-icon').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+    $('.notification-icon').removeClass('animated bounce');
+  });
+
+  //check if there are any invitations, if not append 'not invites'
   let checkInvites = function () {
     $(this).parents('li').fadeOut(300, function () {
       $(this.remove());
-      if (notificationList.find("li").length === 0) $("#notification-list").append('<li id="no-invites">No invites</li>')
+      if (notificationList.find("li").length === 0) {
+        $("#notification-list").append('<li id="no-invites">No invites</li>');
+      }
     });
   };
   $('#butt').on('click', () => {
-    $('.notification-icon').addClass('animated bounce').css('color', '#00d1b2');
-    // socket.emit('message', {
-    //   age: 15
-    // });
+
   });
+
+  //interval to refresh online user list
   setInterval(function () {
     socket.emit('onlineUsers');
   }, 10000);
+
+  postToUserButton.on('click', function () {
+    socket.emit('newpost', {content: postToUserInput.val(), to: $(this).data().user, username: $(this).data().username});
+  });
 
   notificationList.on('click', '.accept', function () {
     socket.emit('accept', $(this).data().username);
@@ -37,16 +51,13 @@ $(function () {
     checkInvites.call($(this));
   });
 
-  $('.notification-icon').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
-    $('.notification-icon').removeClass('animated bounce');
-  });
-  $('#invite').on('click', function () {
+
+  $('#searchResult').on('click', '#invite', function () {
+    console.log('click');
     socket.emit('invite', $(this).data().username);
-    $('body').append(`<div class="animated fadeInLeft notification is-success invite-notification">
-    Invite sent successfully
-    </div>`);
+    $('body').append(`<div class="animated fadeInLeft notification is-success invite-notification">Invite sent successfully</div>`);
     setTimeout(function () {
-      $('.invite-notification').addClass('fadeOutLeft')
+      $('.invite-notification').addClass('fadeOutLeft');
     }, 4000);
     $(this).hide();
   });
@@ -65,13 +76,15 @@ $(function () {
     });
     data.forEach(value => {
       $('#' + value).removeClass('offline').addClass('online');
-    })
+    });
   });
   socket.on('invite', data => {
     $('.notification-icon').addClass('animated wobble').css('color', '#00d1b2');
-    if (noinvites) noinvites.remove();
+    if (noinvites) {
+      noinvites.remove();
+    }
     notificationList.append(`<li class="invite-content">${data.from} sent you an invite<a class="decline" data-username=${data.from}><span class="icon">
-    <i class="fa fa-times"></i></span></a><a class="accept" data-username=${data.from}><span class="icon"><i class="fa fa-check"></i></span></a><hr/></li>`)
+    <i class="fa fa-times"></i></span></a><a class="accept" data-username=${data.from}><span class="icon"><i class="fa fa-check"></i></span></a><hr/></li>`);
   });
   socket.on('accept', data => {
     console.log(data);
@@ -80,42 +93,10 @@ $(function () {
   });
 
   postButton.on('click', function () {
-    socket.emit('newpost', postInput.val());
+    socket.emit('newpost', { content: postInput.val() });
   });
 
   socket.on('newpost', data => {
-    var column = document.createElement('div');
-    column.className = 'column is-10 animated zoomIn';
-    var card = document.createElement('div');
-    card.className = 'card';
-    var cardContent = document.createElement('div');
-    cardContent.className = 'card-content';
-    var media = document.createElement('div');
-    media.className = 'media';
-    var content = document.createElement('div');
-    content.className = 'content';
-    content.innerText = data.post.content;
-    var mediaContent = document.createElement('div');
-    mediaContent.className = 'media-content';
-    var pAuthor = document.createElement('p');
-    pAuthor.className = 'title is-4';
-    pAuthor.innerText = data.author === data.user ? 'Me' : data.author;
-    var aAuthor = document.createElement('a');
-    aAuthor.setAttribute('href', "/profile/" + data.author);
-    var pDate = document.createElement('p');
-    pDate.className = 'subtitle is-6';
-    pDate.innerText = 'Just now';
-
-
-    pAuthor.appendChild(aAuthor);
-    mediaContent.appendChild(pAuthor);
-    mediaContent.appendChild(pDate);
-    media.appendChild(mediaContent);
-    cardContent.appendChild(media);
-    cardContent.appendChild(content);
-    card.appendChild(cardContent);
-    column.appendChild(card);
-
-    postContainer.prepend(column);
+    postContainer.prepend(data);
   });
 });

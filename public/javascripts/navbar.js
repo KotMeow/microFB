@@ -15,9 +15,11 @@ $(function () {
       axios.get('/profile/search/' + input).then(response => {
         searchResult.html('');
         console.log(response.data);
-        if (response.data.length !== 0) searchBox.show();
+        if (response.data.length !== 0) {
+          searchBox.show();
+        }
         response.data.forEach(result => {
-          searchResult.append(`<tr><td><a href="/profile/${result.username}">${result.username}</a></td><td><span style="margin-left: 10px"><i class="fa fa-user-plus fa-lg"></i></span></td></tr>`)
+          searchResult.append(`<tr><td><a href="/profile/${result.username}">${result.username}</a></td><td><span id="invite" data-username=${result.username} style="margin-left: 10px"><i class="fa fa-user-plus fa-lg"></i></span></td></tr>`);
         });
 
 
@@ -25,11 +27,12 @@ $(function () {
     } else {
       searchBox.hide();
     }
-  }).focusout(function () {
-      setTimeout(function () {
-        searchResult.html('');
-        searchBox.hide();
-      }, 2000);
-    });
+  });
+  //     .focusout(function () {
+  //   setTimeout(function () {
+  //     searchResult.html('');
+  //     searchBox.hide();
+  //   }, 2000);
+  // });
 });
   
