@@ -10,4 +10,7 @@
                 i.fa.fa-angle-double-right
               a.to(href='/profile/' + to)= to === user ? 'Me' : to
           p.subtitle.is-6 Just now
+      i.fa.fa-share
+      i.fa.fa-heart
+      span.likes= post.likes.length
       .content= post.content

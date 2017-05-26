@@ -24,7 +24,28 @@ router.get('/:username', (req, res) => {
     res.redirect('/auth/login');
   }
   else {
-    Promise.all([User.findById(req.user).populate('friends invites'), User.findOne({username: req.params.username}).populate('invites')])
+    res.locals.checkLikes = function (likes, user) {
+      let liked = false;
+      likes.forEach(like => {
+        if (like.username === user) {
+          liked = true;
+        }
+      });
+      return liked;
+    };
+    res.locals.checkShared = function (id) {
+      let shared = false;
+      res.locals.shared.forEach(post => {
+        if (post._id === id) {
+          shared = true;
+        }
+      });
+      return shared;
+    };
+    Promise.all([User.findById(req.user).populate('friends invites'), User.findOne({username: req.params.username}).populate({
+      path: 'invites sharedPosts',
+      populate: {path: '_creator'}
+    })])
         .spread((user, profile) => {
           let friends = false;
           let inviteSent = false;
@@ -42,7 +63,11 @@ router.get('/:username', (req, res) => {
             friends = true;
           }
 
-          Post.find({$or: [{_creator: profile}, {to: profile}]}).populate('_creator to').then(posts => {
+          Post.find({$or: [{_creator: profile}, {to: profile}]}).populate('_creator to likes').then(posts => {
+            res.locals.shared = profile.sharedPosts;
+            profile.sharedPosts.forEach(post => {
+              posts.push(post);
+            });
 
             posts = _.sortBy(posts, function (o) {
               return new moment(o.date);
@@ -72,8 +97,6 @@ router.get('/search/:name', (req, res) => {
     res.send(users);
   });
 });
-
-
 
 
 module.exports = router;

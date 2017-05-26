@@ -21,41 +21,64 @@ router.get('/', function (req, res) {
         friends.push(friend._id);
       });
       friends.push(req.user._id);
-      Promise.reduce(friends, function(total, friend) {
-        return Post.find({_creator : friend}).populate('_creator to').then(function(post) {
+      Promise.reduce(friends, function (total, friend) {
+        return Post.find({_creator: friend}).populate('_creator to likes').then(function (post) {
           post.forEach(po => {
             posts.push(po);
           });
           return posts;
         });
-      }, 0).then(function(total) {
-        total = _.sortBy(total, function(o) {
+      }, 0).then(function (total) {
+        total = _.sortBy(total, function (o) {
           return new moment(o.date);
         }).reverse();
+
+        res.locals.checkLikes = function (likes, user) {
+          let liked = false;
+          likes.forEach(like => {
+            if (like.username === user) {
+              liked = true;
+            }
+          });
+          return liked;
+        };
         res.render('index', {user: user, posts: total});
       });
     });
   }
 });
 
-router.get('/like', (req, res) => {
-  Post.findOne({}).then(post => {
-    post.likes.push(req.user._id);
-    post.save().then(() => {
-      res.send(post);
-    });
-  });
+router.post('/like', (req, res) => {
+  let liked = false;
+  let element;
+  Post.findById(req.body.post).populate('likes')
+      .then(post => {
 
+        post.likes.forEach((like, index) => {
+          if (req.user.username === like.username) {
+            liked = true;
+            element = index;
+          }
+        });
+        if (liked) {
+          console.log('liked');
+          post.likes.splice(element, 1);
+        }
+        else {
+          console.log('push');
+          post.likes.push(req.user._id);
+        }
+        return post.save();
+      })
+      .then((post) => {
+        res.send(post);
+      });
 });
 
 router.get('/shared', (req, res) => {
 
-  User.findOne({})
-      .then(user => {
-        return Post.find().populate('sharedBy');
-      })
-      .then(posts => {
-        res.send(posts);
-      });
+  User.findById(req.user).populate('sharedPosts').then(user => {
+    res.send(user);
+  });
 });
 module.exports = router;

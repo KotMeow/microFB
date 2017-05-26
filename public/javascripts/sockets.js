@@ -27,10 +27,12 @@ $(function () {
       }
     });
   };
-  $('#butt').on('click', () => {
-
+  $('.like').on('click', function () {
+    $(this).toggleClass('liked');
+    axios.post('/like', {post: $(this).data().post}).then(response => {
+      $(this).next().html(response.data.likes.length);
+    });
   });
-
   //interval to refresh online user list
   setInterval(function () {
     socket.emit('onlineUsers');

@@ -9,7 +9,6 @@ let Post = new Schema({
     default: Date.now
   },
   content: String,
-  sharedBy: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   likes: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   image: {
     data: Buffer,

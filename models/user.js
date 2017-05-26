@@ -10,6 +10,7 @@ var User = new Schema({
     data: Buffer,
     contentType: String
   },
+  sharedPosts: [{type: mongoose.Schema.Types.ObjectId, ref: 'Post'}],
   invites: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   friends: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
 });

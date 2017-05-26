@@ -29,4 +29,7 @@ block content
                         i.fa.fa-angle-double-right
                       a.to(href='/profile/' + post.to.username)= post.to.username === user.username ?  'Me' : post.to.username
                   p.subtitle.is-6= moment(post.date).fromNow()
+              i.fa.fa-share
+              i.fa.fa-heart.like(data-post = post._id, class = checkLikes(post.likes, user.username) ? 'liked' : '')
+              span.likes= post.likes.length
               .content= post.content
