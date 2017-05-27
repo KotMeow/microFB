@@ -239,9 +239,10 @@ hr {
 .search-box {
   width: 300px;
   top: 50px;
-  right: 128px;
+  right: 150px;
   position: absolute;
   display: none;
+  z-index: 99;
 }
 nav.level {
   margin-top: -90px;
@@ -286,7 +287,7 @@ nav.level {
 
 .fa-share {
   color: @grey;
-  margin-right: 10px;
+  margin-left: 10px;
 }
 .fa-heart:hover {
   cursor: pointer;
@@ -299,4 +300,8 @@ nav.level {
 }
 .liked {
   color: @red;
+}
+.share:hover {
+  cursor: pointer;
+  color: @green;
 }

@@ -14,7 +14,6 @@ $(function () {
     if (input.length >= 2) {
       axios.get('/profile/search/' + input).then(response => {
         searchResult.html('');
-        console.log(response.data);
         if (response.data.length !== 0) {
           searchBox.show();
         }

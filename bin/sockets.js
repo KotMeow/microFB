@@ -117,26 +117,53 @@ module.exports.listen = function (io) {
               var fn = pug.compileFile(path.join(__dirname, '../views/shared/post.pug'));
               // Render function
               user.friends.forEach(friend => {
+                let canShare = true;
+
                 let html = fn({
                   post: post,
                   author: user.username,
                   user: friend.username,
-                  to: toUsername
+                  to: toUsername,
+                  canShare: canShare
                 });
-                io.in(friend.username).emit('newpost', html);
+                io.in(friend.username).emit('newpost', {post: html, to: toUsername, creator: user.username});
               });
+              let canShare = false;
               let html = fn({
                 post: post,
                 author: user.username,
                 user: socket.request.user.username,
-                to: toUsername
+                to: toUsername,
+                canShare: canShare
               });
-              io.in(user.username).emit('newpost', html);
+              io.in(user.username).emit('newpost', {post: html, to: toUsername, creator: user.username});
             });
           })
           .catch(err => {
             console.log(err);
           });
+    });
+    socket.on('sharePost', data => {
+      Promise.all([
+        User.findById(socket.request.user).populate('friends'),
+        Post.findById(data).populate('_creator to')
+      ]).spread((user, post) => {
+        user.sharedPosts.push(data);
+        var fn = pug.compileFile(path.join(__dirname, '../views/shared/post.pug'));
+        // Render function
+        let to = post.to === undefined || post.to === null ? '' : post.to.username;
+        user.friends.forEach(friend => {
+          let html = fn({
+            post: post,
+            author: post._creator.username,
+            user: friend.username,
+            to: to,
+            canShare: false
+          });
+          io.in(friend.username).emit('newpost', {post: html, to: to, creator: post._creator.username, shared: user.username});
+        });
+      user.save();
+      });
     });
   });
 

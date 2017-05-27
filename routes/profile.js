@@ -42,11 +42,30 @@ router.get('/:username', (req, res) => {
       });
       return shared;
     };
-    Promise.all([User.findById(req.user).populate('friends invites'), User.findOne({username: req.params.username}).populate({
-      path: 'invites sharedPosts',
-      populate: {path: '_creator'}
-    })])
+    res.locals.checkCanShare = function (post, user) {
+      let canShare = true;
+      let to = post.to === undefined || post.to === null ? ' ' : post.to.username;
+      if (to.localeCompare(user) === 0 || post._creator.username.localeCompare(user) === 0) {
+        canShare = false;
+      }
+      res.locals.sharedPosts.forEach(sharedPost => {
+        if (sharedPost._id.toString() === post._id.toString()) {
+          canShare = false;
+        }
+      });
+      return canShare;
+    };
+    Promise.all([
+      User.findById(req.user).populate({
+        path: 'friends invites sharedPosts',
+        populate: {path: '_creator to'}
+      }),
+      User.findOne({username: req.params.username}).populate({
+        path: 'invites sharedPosts',
+        populate: {path: '_creator to'}
+      })])
         .spread((user, profile) => {
+          res.locals.sharedPosts = user.sharedPosts;
           let friends = false;
           let inviteSent = false;
           user.friends.forEach(friend => {
@@ -63,7 +82,7 @@ router.get('/:username', (req, res) => {
             friends = true;
           }
 
-          Post.find({$or: [{_creator: profile}, {to: profile}]}).populate('_creator to likes').then(posts => {
+          Post.find({$or: [{_creator: profile}, {to: profile}]}).populate('_creator to likes sharedPosts').then(posts => {
             res.locals.shared = profile.sharedPosts;
             profile.sharedPosts.forEach(post => {
               posts.push(post);

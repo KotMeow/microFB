@@ -27,11 +27,20 @@ $(function () {
       }
     });
   };
-  $('.like').on('click', function () {
+  postContainer.on('click', '.like', function () {
     $(this).toggleClass('liked');
     axios.post('/like', {post: $(this).data().post}).then(response => {
       $(this).next().html(response.data.likes.length);
     });
+  });
+  postContainer.on('click', '.share', function () {
+    console.log('share');
+    socket.emit('sharePost', $(this).data().post);
+    $('body').append(`<div class="animated fadeInLeft notification is-success invite-notification">Post shared on your wall</div>`);
+    setTimeout(function () {
+      $('.invite-notification').addClass('fadeOutLeft');
+    }, 4000);
+    $(this).hide();
   });
   //interval to refresh online user list
   setInterval(function () {
@@ -39,7 +48,11 @@ $(function () {
   }, 10000);
 
   postToUserButton.on('click', function () {
-    socket.emit('newpost', {content: postToUserInput.val(), to: $(this).data().user, username: $(this).data().username});
+    socket.emit('newpost', {
+      content: postToUserInput.val(),
+      to: $(this).data().user,
+      username: $(this).data().username
+    });
   });
 
   notificationList.on('click', '.accept', function () {
@@ -95,10 +108,24 @@ $(function () {
   });
 
   postButton.on('click', function () {
-    socket.emit('newpost', { content: postInput.val() });
+    socket.emit('newpost', {content: postInput.val()});
   });
 
   socket.on('newpost', data => {
-    postContainer.prepend(data);
+    let containerUser = postContainer.data().user;
+    if (!data.shared) {
+      console.log(data.creator);
+      console.log(data.to);
+      console.log(containerUser);
+      if (containerUser === data.creator || containerUser === data.to) {
+        postContainer.prepend(data.post);
+      }
+      if (containerUser === undefined) {
+        postContainer.prepend(data.post);
+      }
+    }
+    else if (containerUser === data.shared) {
+      postContainer.prepend(data.post);
+    }
   });
 });

@@ -13,7 +13,7 @@ router.get('/', function (req, res) {
     res.redirect('/auth/login');
   }
   else {
-    User.findById(req.user).populate('friends invites').then(user => {
+    User.findById(req.user).populate('friends invites sharedPosts').then(user => {
       let friends = [];
       let posts = [];
 
@@ -42,6 +42,22 @@ router.get('/', function (req, res) {
           });
           return liked;
         };
+        res.locals.checkCanShare = function (post, user) {
+          let canShare = true;
+          console.log(post);
+          let to = post.to === undefined || post.to === null ? '' : post.to.username;
+          if (to.localeCompare(user) === 0 || post._creator.username.localeCompare(user) === 0) {
+            canShare = false;
+          }
+          res.locals.shared.forEach(sharedPost => {
+            if (sharedPost._id.toString() === post._id.toString()) {
+              canShare = false;
+            }
+          });
+          return canShare;
+
+        };
+        res.locals.shared = user.sharedPosts;
         res.render('index', {user: user, posts: total});
       });
     });
