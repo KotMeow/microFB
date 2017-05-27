@@ -9,29 +9,18 @@ var path = require('path');
 module.exports.listen = function (io) {
 
   io.on('connection', function (socket) {
-
-    socket.on('message', () => {
-      console.log('message');
-      User.findOne({username: socket.request.user.username}).populate('friends').then(user => {
-        user.friends.forEach(friend => {
-          io.in(friend.username).emit('message', {init: "KK", name: socket.request.user.username});
-        });
-      });
+    var username = socket.request.user.username;
+    socket.join(username);
+    let users = [];
+    passportSocketIo.filterSocketsByUser(io, function (user) {
+      users.push(user.username);
+      return user;
     });
 
-    socket.on('join', () => {
-      var username = socket.request.user.username;
-      socket.join(username);
-      let users = [];
-      passportSocketIo.filterSocketsByUser(io, function (user) {
-        users.push(user.username);
-        return user;
-      });
-      io.in(username).emit('onlineUsers', users);
-      User.findOne({username: username}).populate('friends').then(user => {
-        user.friends.forEach(friend => {
-          io.in(friend.username).emit('online', {username: username});
-        });
+    io.in(username).emit('onlineUsers', users);
+    User.findOne({username: username}).populate('friends').then(user => {
+      user.friends.forEach(friend => {
+        io.in(friend.username).emit('online', {username: username});
       });
     });
 
@@ -150,7 +139,7 @@ module.exports.listen = function (io) {
       ]).spread((user, post) => {
         user.sharedPosts.push(data);
         var fn = pug.compileFile(path.join(__dirname, '../views/shared/post.pug'));
-        // Render function
+
         let to = post.to === undefined || post.to === null ? '' : post.to.username;
         user.friends.forEach(friend => {
           let html = fn({
@@ -164,6 +153,11 @@ module.exports.listen = function (io) {
         });
       user.save();
       });
+    });
+
+    socket.on('chatMessage', (data) => {
+      console.log(`chat message to ${data.to}, content: ${data.content}`);
+      io.in(data.to).emit('chatMessage', {from: socket.request.user.username, content: data.content});
     });
   });
 

@@ -44,7 +44,6 @@ router.get('/', function (req, res) {
         };
         res.locals.checkCanShare = function (post, user) {
           let canShare = true;
-          console.log(post);
           let to = post.to === undefined || post.to === null ? '' : post.to.username;
           if (to.localeCompare(user) === 0 || post._creator.username.localeCompare(user) === 0) {
             canShare = false;
@@ -77,11 +76,9 @@ router.post('/like', (req, res) => {
           }
         });
         if (liked) {
-          console.log('liked');
           post.likes.splice(element, 1);
         }
         else {
-          console.log('push');
           post.likes.push(req.user._id);
         }
         return post.save();
@@ -92,9 +89,14 @@ router.post('/like', (req, res) => {
 });
 
 router.get('/shared', (req, res) => {
-
   User.findById(req.user).populate('sharedPosts').then(user => {
     res.send(user);
   });
+});
+
+router.post('/getchat', (req, res) => {
+  var fn = pug.compileFile(path.join(__dirname, '../views/shared/chatWindow.pug'));
+  let html = fn({user: req.body.user});
+  res.send(html);
 });
 module.exports = router;

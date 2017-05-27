@@ -1,7 +1,7 @@
-.live-chat
+.live-chat(id='chat-' + user)
   header.clearfix
     i.fa.fa-times.chat-close(aria-hidden='true')
-    h4 Kamil Kot 
+    h4.capitalize= user
   .chat
     .chat-history
       .chat-message.clearfix
@@ -23,6 +23,6 @@
       hr
     .chat-input-container
       .field
-        input.input(type='text', placeholder='Type your message…', autofocus='')
+        input.input.chat-input(data-user= user, type='text', placeholder='Type your message…', autofocus='')
         input(type='hidden')
   // end chat
