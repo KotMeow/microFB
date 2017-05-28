@@ -13,7 +13,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var expressValidator = require('express-validator');
 const MongoStore = require('connect-mongo')(session);
-
+var compression = require('compression');
 
 mongoose.connect('mongodb://localhost/test');
 
@@ -22,6 +22,7 @@ var profile = require('./routes/profile');
 var auth = require('./routes/auth');
 
 var app = express();
+app.use(compression());
 app.locals.moment = require('moment');
 //nie działa na windowsowym redisie
 // app.set('sessionStore', new RedisStore({
@@ -62,7 +63,6 @@ app.use(passport.session());
 
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 
 app.use('/', index);

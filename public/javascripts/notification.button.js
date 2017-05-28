@@ -5,19 +5,28 @@ $(function () {
     $('.notification-icon').css('color', '#7a7a7a');
     box.toggle('fast');
   });
-  $('.chat-container').on('click', '.live-chat header', function() {
+  $('.chat-container').on('click', '.live-chat header', function () {
 
     $(this).next().slideToggle(300, 'swing');
 
+    if ($(this).find('.message-count').html().localeCompare("0") === 0) {
+      $(this).find('.message-count').hide();
+    } else {
+      $(this).find('.message-count').fadeToggle(300, 'swing');
+    }
+    if($(this).next().is(':visible')) {
+      $(this).find('.message-count').hide();
+      $(this).find('.message-count').html(0);
+    }
   });
-  $('.chat-container').on('click', '.chat-close', function(e) {
+  $('.chat-container').on('click', '.chat-close', function (e) {
     console.log($(this).parent().parent());
     let x = $(this).parent().parent();
     e.preventDefault();
     x.fadeOut(300);
-    setTimeout(function(){
+    setTimeout(function () {
       x.remove();
-    },300);
+    }, 300);
 
   });
 

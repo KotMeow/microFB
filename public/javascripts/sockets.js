@@ -27,15 +27,38 @@ $(function () {
     }
   });
 
+  socket.on('chatMessage', data => {
+    console.log($('#chat-' + data.from).length);
+    if ($('#chat-' + data.from).length > 0) {
+      console.log('istnieje');
+      let thisChat = $('#chat-' + data.from).find('.chat-history');
+      thisChat.append(`<div class="chat-message clearfix"><div class="chat-message-content clearfix"><h5>${data.from}</h5><p>${data.content}</p></div></div><hr/>`);
+      let count =parseInt($('#chat-' + data.from).find('.message-count').text());
+      $('#chat-' + data.from).find('.message-count').text(count +1);
+      if (!$('#chat-' + data.from).find('.chat').is(':visible')) {
+        $('#chat-' + data.from).find('.message-count').show();
+      }
+
+      thisChat.scrollTop(thisChat[0].scrollHeight);
+    } else if ($('#chat-' + data.from).length === 0) {
+      axios.post('/getchat', {user: data.from}).then(response => {
+        chatContainer.prepend(response.data);
+        let thisChat = $('.live-chat').first().find('.chat-history');
+        thisChat.append(`<div class="chat-message clearfix"><div class="chat-message-content clearfix"><h5>${data.from}</h5><p>${data.content}</p></div></div><hr/>`);
+        thisChat.scrollTop(thisChat[0].scrollHeight);
+      });
+    }
+    console.log(`chat message from ${data.from}, content: ${data.content}`);
+  });
+
   $('.chat-container').on('keyup', '.chat-input', function (e) {
     if (e.keyCode === 13) {
       let thisChat = $('#chat-' + $(this).data().user).find('.chat-history');
-      console.log();
-      thisChat.append(`<div class="chat-message clearfix"><div class="chat-message-content clearfix"><h5>Marco Biedermann</h5><p>${$(this).val()}</p></div></div><hr/>`);
+      thisChat.append(`<div class="chat-message clearfix"><div class="chat-message-content clearfix"><h5>Me</h5><p>${$(this).val()}</p></div></div><hr/>`);
       //thisChat.scrollBottom = thisChat.scrollHeight;
       thisChat.scrollTop(thisChat[0].scrollHeight);
-      console.log($(this).val(), $(this).data().user);
-      //socket.emit('chatMessage', {content: $(this).val(), to: $(this).data().user});
+      //console.log($(this).val(), $(this).data().user);
+      socket.emit('chatMessage', {content: $(this).val(), to: $(this).data().user});
       $(this).val('');
     }
   });
@@ -156,7 +179,5 @@ $(function () {
       postContainer.prepend(data.post);
     }
   });
-  socket.on('chatMessage', data => {
-    console.log(`chat message from ${data.from}, content: ${data.content}`);
-  });
+
 });

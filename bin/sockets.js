@@ -10,6 +10,7 @@ module.exports.listen = function (io) {
 
   io.on('connection', function (socket) {
     var username = socket.request.user.username;
+    console.log(`User ${username} connected`);
     socket.join(username);
     let users = [];
     passportSocketIo.filterSocketsByUser(io, function (user) {
@@ -156,8 +157,9 @@ module.exports.listen = function (io) {
     });
 
     socket.on('chatMessage', (data) => {
-      console.log(`chat message to ${data.to}, content: ${data.content}`);
-      io.in(data.to).emit('chatMessage', {from: socket.request.user.username, content: data.content});
+      //console.log(`chat message to ${data.to}, content: ${data.content}`);
+      io.in(data.to).emit('chatMessage', {from: socket.request.user.username, to: data.to, content: data.content});
+      //io.in(socket.request.user.username).emit('chatMessage', {from: socket.request.user.username, to: data.to, content: data.content});
     });
   });
 

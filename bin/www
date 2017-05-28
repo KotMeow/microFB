@@ -27,7 +27,7 @@ var server = http.createServer(app);
  */
 
 server.listen(port);
-io = socketio(server);
+let io = socketio(server);
 
 io.use(passportSocketIo.authorize({
   key: 'express.sid',
