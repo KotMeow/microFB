@@ -5,8 +5,17 @@
     h4.capitalize= user
   .chat
     .chat-history
+      each message in history
+        .chat-message.clearfix(class= message.from === user ? "myMessage" : "")
+          .chat-message-content.clearfix
+            if (message.from === user)
+              h5 #{message.from}
+            else if (message.from !== user)
+              h5 Me
+            p #{message.message}
+        hr
     .chat-input-container
       .field
-        input.input.chat-input(data-user= user, type='text', placeholder='Type your message…', autofocus='')
+        input.input.chat-input(data-user= user, data-userid = userid type='text', placeholder='Type your message…', autofocus='')
         input(type='hidden')
   // end chat

@@ -1,6 +1,7 @@
 var socketio = require('socket.io');
 var User = require('../models/user');
 var Post = require('../models/post');
+var chatHistory = require('../models/chatHistory');
 var passportSocketIo = require("passport.socketio");
 var Promise = require("bluebird");
 var pug = require('pug');
@@ -71,6 +72,10 @@ module.exports.listen = function (io) {
           .spread((user1, user2) => {
             io.in(user1.username).emit('accept', user2.username);
             io.in(user2.username).emit('accept', user1.username);
+            return chatHistory.create({
+              user1: user1._id,
+              user2: user2._id
+            });
           })
           .catch(err => {
             console.log(err);
@@ -150,16 +155,37 @@ module.exports.listen = function (io) {
             to: to,
             canShare: false
           });
-          io.in(friend.username).emit('newpost', {post: html, to: to, creator: post._creator.username, shared: user.username});
+          io.in(friend.username).emit('newpost', {
+            post: html,
+            to: to,
+            creator: post._creator.username,
+            shared: user.username
+          });
         });
-      user.save();
+        user.save();
       });
     });
 
     socket.on('chatMessage', (data) => {
-      //console.log(`chat message to ${data.to}, content: ${data.content}`);
-      io.in(data.to).emit('chatMessage', {from: socket.request.user.username, to: data.to, content: data.content});
-      //io.in(socket.request.user.username).emit('chatMessage', {from: socket.request.user.username, to: data.to, content: data.content});
+      let user = socket.request.user;
+      chatHistory.findOne()
+          .and([
+            {$or: [{user1: user._id}, {user2: user._id}]},
+            {$or: [{user1: data.toid}, {user2: data.toid}]}
+          ]).then(retrHistory => {
+        retrHistory.history.push({
+          from: socket.request.user.username,
+          message: data.content
+        });
+        retrHistory.save()
+            .then(() => {
+              io.in(data.to).emit('chatMessage', {from: user.username, content: data.content, fromId: user._id});
+            })
+            .catch(err => {
+              console.log(err);
+            });
+      });
+
     });
   });
 

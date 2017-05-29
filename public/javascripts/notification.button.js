@@ -7,12 +7,12 @@ $(function () {
   });
   $('.chat-container').on('click', '.live-chat header', function () {
 
-    $(this).next().slideToggle(300, 'swing');
-
+    $(this).next().slideToggle(200, 'swing');
+    $(this).next().find('.chat-history').scrollTop($(this).next().find('.chat-history')[0].scrollHeight);
     if ($(this).find('.message-count').html().localeCompare("0") === 0) {
       $(this).find('.message-count').hide();
     } else {
-      $(this).find('.message-count').fadeToggle(300, 'swing');
+      $(this).find('.message-count').fadeToggle(3200, 'swing');
     }
     if($(this).next().is(':visible')) {
       $(this).find('.message-count').hide();

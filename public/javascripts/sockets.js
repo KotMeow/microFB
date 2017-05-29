@@ -19,7 +19,7 @@ $(function () {
     if ($('#chat-' + $(this).data().user).length > 0) {
       console.log('istnieje');
     } else {
-      axios.post('/getchat', {user: $(this).data().user}).then(response => {
+      axios.post('/getchat', {user: $(this).data().user, userid: $(this).data().userid}).then(response => {
         chatContainer.prepend(response.data);
         let thisChat = $('.live-chat').first().find('.chat-history');
         thisChat.scrollTop(thisChat[0].scrollHeight);
@@ -28,37 +28,33 @@ $(function () {
   });
 
   socket.on('chatMessage', data => {
-    console.log($('#chat-' + data.from).length);
-    if ($('#chat-' + data.from).length > 0) {
-      console.log('istnieje');
-      let thisChat = $('#chat-' + data.from).find('.chat-history');
-      thisChat.append(`<div class="chat-message clearfix"><div class="chat-message-content clearfix"><h5>${data.from}</h5><p>${data.content}</p></div></div><hr/>`);
-      let count =parseInt($('#chat-' + data.from).find('.message-count').text());
-      $('#chat-' + data.from).find('.message-count').text(count +1);
-      if (!$('#chat-' + data.from).find('.chat').is(':visible')) {
-        $('#chat-' + data.from).find('.message-count').show();
+    let chatSelector = $('#chat-' + data.from);
+    console.log(chatSelector.length);
+    if (chatSelector.length > 0) {
+      let thisChat = chatSelector.find('.chat-history');
+      thisChat.append(`<div class="chat-message myMessage clearfix"><div class="chat-message-content clearfix"><h5>${data.from}</h5><p>${data.content}</p></div></div><hr/>`);
+      let count =parseInt(chatSelector.find('.message-count').text());
+      chatSelector.find('.message-count').text(count +1);
+      if (!chatSelector.find('.chat').is(':visible')) {
+        chatSelector.find('.message-count').show();
       }
 
       thisChat.scrollTop(thisChat[0].scrollHeight);
     } else if ($('#chat-' + data.from).length === 0) {
-      axios.post('/getchat', {user: data.from}).then(response => {
+      axios.post('/getchat', {user: data.from, userid: data.fromId}).then(response => {
         chatContainer.prepend(response.data);
         let thisChat = $('.live-chat').first().find('.chat-history');
-        thisChat.append(`<div class="chat-message clearfix"><div class="chat-message-content clearfix"><h5>${data.from}</h5><p>${data.content}</p></div></div><hr/>`);
         thisChat.scrollTop(thisChat[0].scrollHeight);
       });
     }
-    console.log(`chat message from ${data.from}, content: ${data.content}`);
   });
 
   $('.chat-container').on('keyup', '.chat-input', function (e) {
-    if (e.keyCode === 13) {
+    if (e.keyCode === 13 && $(this).val().length > 0) {
       let thisChat = $('#chat-' + $(this).data().user).find('.chat-history');
       thisChat.append(`<div class="chat-message clearfix"><div class="chat-message-content clearfix"><h5>Me</h5><p>${$(this).val()}</p></div></div><hr/>`);
-      //thisChat.scrollBottom = thisChat.scrollHeight;
       thisChat.scrollTop(thisChat[0].scrollHeight);
-      //console.log($(this).val(), $(this).data().user);
-      socket.emit('chatMessage', {content: $(this).val(), to: $(this).data().user});
+      socket.emit('chatMessage', {content: $(this).val(), to: $(this).data().user, toid: $(this).data().userid});
       $(this).val('');
     }
   });
@@ -87,7 +83,6 @@ $(function () {
     });
   });
   postContainer.on('click', '.share', function () {
-    console.log('share');
     socket.emit('sharePost', $(this).data().post);
     $('body').append(`<div class="animated fadeInLeft notification is-success invite-notification">Post shared on your wall</div>`);
     setTimeout(function () {
@@ -160,14 +155,13 @@ $(function () {
 
   postButton.on('click', function () {
     socket.emit('newpost', {content: postInput.val()});
+    postInput.val(" ");
+    postInput.focus();
   });
 
   socket.on('newpost', data => {
     let containerUser = postContainer.data().user;
     if (!data.shared) {
-      console.log(data.creator);
-      console.log(data.to);
-      console.log(containerUser);
       if (containerUser === data.creator || containerUser === data.to) {
         postContainer.prepend(data.post);
       }

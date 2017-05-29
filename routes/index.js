@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var Post = require('../models/post');
+var chatHistory = require('../models/chatHistory');
 var Promise = require("bluebird");
 var moment = require("moment");
 var _ = require('lodash');
@@ -95,8 +96,15 @@ router.get('/shared', (req, res) => {
 });
 
 router.post('/getchat', (req, res) => {
-  var fn = pug.compileFile(path.join(__dirname, '../views/shared/chatWindow.pug'));
-  let html = fn({user: req.body.user});
-  res.send(html);
+  chatHistory.findOne()
+      .and([
+        {$or: [{user1: req.body.userid}, {user2: req.body.userid}]},
+        {$or: [{user1: req.user._id}, {user2: req.user._id}]}
+      ]).then(retrHistory => {
+    var fn = pug.compileFile(path.join(__dirname, '../views/shared/chatWindow.pug'));
+    let html = fn({user: req.body.user, userid: req.body.userid, history: retrHistory.history});
+    res.send(html);
+  });
+
 });
 module.exports = router;
