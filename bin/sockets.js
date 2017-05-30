@@ -182,26 +182,51 @@ module.exports.listen = function (io) {
     });
 
     socket.on('chatMessage', (data) => {
-      let user = socket.request.user;
-      chatHistory.findOne()
-          .and([
-            {$or: [{user1: user._id}, {user2: user._id}]},
-            {$or: [{user1: data.toid}, {user2: data.toid}]}
-          ]).then(retrHistory => {
-        retrHistory.history.push({
-          from: socket.request.user.username,
-          message: data.content
-        });
-        retrHistory.save()
-            .then(() => {
-              io.in(data.to).emit('chatMessage', {from: user.username, content: data.content, fromId: user._id});
-            })
-            .catch(err => {
-              console.log(err);
+      console.log(data.to);
+      if (data.to === "all") {
+        User.findById(socket.request.user).populate('friends').then(user => {
+          user.friends.forEach(friend => {
+            chatHistory.findOne()
+                .and([
+                  {$or: [{user1: user._id}, {user2: user._id}]},
+                  {$or: [{user1: friend._id}, {user2: friend._id}]}
+                ]).then(retrHistory => {
+              retrHistory.history.push({
+                from: socket.request.user.username,
+                message: data.content
+              });
+              retrHistory.save()
+                  .then(() => {
+                    io.in(friend.username).emit('chatMessage', {from: user.username, content: data.content, fromId: user._id});
+                  })
+                  .catch(err => {
+                    console.log(err);
+                  });
             });
-      });
-
+          });
+        });
+      } else {
+        let user = socket.request.user;
+        chatHistory.findOne()
+            .and([
+              {$or: [{user1: user._id}, {user2: user._id}]},
+              {$or: [{user1: data.toid}, {user2: data.toid}]}
+            ]).then(retrHistory => {
+          retrHistory.history.push({
+            from: socket.request.user.username,
+            message: data.content
+          });
+          retrHistory.save()
+              .then(() => {
+                io.in(data.to).emit('chatMessage', {from: user.username, content: data.content, fromId: user._id});
+              })
+              .catch(err => {
+                console.log(err);
+              });
+        });
+      }
     });
+
   });
 
   return io;

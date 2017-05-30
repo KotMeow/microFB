@@ -14,12 +14,23 @@ $(function () {
   let chatContainer = $('.chat-container');
   let openChatButton = $('.open-chat');
   let chatInput = $('.chat-input');
-
+  let privateToAll = $('#private-to-all');
   friendlist.on('click', '.open-chat', function () {
     if ($('#chat-' + $(this).data().user).length > 0) {
       console.log('istnieje');
     } else {
       axios.post('/getchat', {user: $(this).data().user, userid: $(this).data().userid}).then(response => {
+        chatContainer.prepend(response.data);
+        let thisChat = $('.live-chat').first().find('.chat-history');
+        thisChat.scrollTop(thisChat[0].scrollHeight);
+      });
+    }
+  });
+  privateToAll.on('click', function () {
+    if ($('#chat-all').length > 0) {
+      console.log('istnieje');
+    } else {
+      axios.post('/getchat', {user: "all"}).then(response => {
         chatContainer.prepend(response.data);
         let thisChat = $('.live-chat').first().find('.chat-history');
         thisChat.scrollTop(thisChat[0].scrollHeight);
@@ -53,8 +64,12 @@ $(function () {
       thisChat.scrollTop(thisChat[0].scrollHeight);
     } else if ($('#chat-' + data.from).length === 0) {
       axios.post('/getchat', {user: data.from, userid: data.fromId}).then(response => {
+
         chatContainer.prepend(response.data);
         let thisChat = $('.live-chat').first().find('.chat-history');
+        if (data.toAll) {
+          thisChat.append(`<div class="chat-message myMessage clearfix"><div class="chat-message-content clearfix"><h5>${data.from}</h5><p>${data.content}</p></div></div><hr/>`);
+        }
         thisChat.scrollTop(thisChat[0].scrollHeight);
       });
     }

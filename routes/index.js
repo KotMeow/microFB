@@ -96,15 +96,21 @@ router.get('/shared', (req, res) => {
 });
 
 router.post('/getchat', (req, res) => {
-  chatHistory.findOne()
-      .and([
-        {$or: [{user1: req.body.userid}, {user2: req.body.userid}]},
-        {$or: [{user1: req.user._id}, {user2: req.user._id}]}
-      ]).then(retrHistory => {
+  console.log(req.body.user);
+  if (req.body.user === "all") {
     var fn = pug.compileFile(path.join(__dirname, '../views/shared/chatWindow.pug'));
-    let html = fn({user: req.body.user, userid: req.body.userid, history: retrHistory.history});
+    let html = fn({user: "all", history: [], userid: ''});
     res.send(html);
-  });
-
+  } else {
+    chatHistory.findOne()
+        .and([
+          {$or: [{user1: req.body.userid}, {user2: req.body.userid}]},
+          {$or: [{user1: req.user._id}, {user2: req.user._id}]}
+        ]).then(retrHistory => {
+      var fn = pug.compileFile(path.join(__dirname, '../views/shared/chatWindow.pug'));
+      let html = fn({user: req.body.user, userid: req.body.userid, history: retrHistory.history});
+      res.send(html);
+    });
+  }
 });
 module.exports = router;
