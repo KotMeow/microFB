@@ -70,8 +70,8 @@ module.exports.listen = function (io) {
             return Promise.all([user1.save(), user2.save()]);
           })
           .spread((user1, user2) => {
-            io.in(user1.username).emit('accept', user2.username);
-            io.in(user2.username).emit('accept', user1.username);
+            io.in(user1.username).emit('accept', {user: user2.username, userId: user2._id});
+            io.in(user2.username).emit('accept', {user: user1.username, userId: user1._id});
             return chatHistory.create({
               user1: user1._id,
               user2: user2._id
@@ -153,7 +153,8 @@ module.exports.listen = function (io) {
             author: post._creator.username,
             user: friend.username,
             to: to,
-            canShare: false
+            canShare: false,
+            shared: user.username
           });
           io.in(friend.username).emit('newpost', {
             post: html,
@@ -161,6 +162,20 @@ module.exports.listen = function (io) {
             creator: post._creator.username,
             shared: user.username
           });
+        });
+        let html = fn({
+          post: post,
+          author: post._creator.username,
+          user: user.username,
+          to: to,
+          canShare: false,
+          shared: user.username
+        });
+        io.in(user.username).emit('newpost', {
+          post: html,
+          to: to,
+          creator: post._creator.username,
+          shared: user.username
         });
         user.save();
       });

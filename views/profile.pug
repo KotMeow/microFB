@@ -50,7 +50,7 @@ block content
                           a.to(href='/profile/' + post.to.username)= post.to.username === user.username ? 'Me' : post.to.username
                       p.subtitle.is-6= moment(post.date).fromNow()
                   div.post-actions
-                    i.fa.fa-heart.like(data-post = post._id, class = checkLikes(post.likes, user.username) ? 'liked' : '')
+                    i.fa.fa-heart.like(data-post = post._id, class = checkLikes(post.likes, user._id) ? 'liked': '' )
                     span.likes= post.likes.length
                     if (checkCanShare(post, user.username))
                       i.fa.fa-share.share.share(data-post = post._id)

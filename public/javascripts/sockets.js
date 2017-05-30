@@ -15,7 +15,7 @@ $(function () {
   let openChatButton = $('.open-chat');
   let chatInput = $('.chat-input');
 
-  openChatButton.on('click', function () {
+  friendlist.on('click', '.open-chat', function () {
     if ($('#chat-' + $(this).data().user).length > 0) {
       console.log('istnieje');
     } else {
@@ -26,6 +26,17 @@ $(function () {
       });
     }
   });
+  // openChatButton.on('click', function () {
+  //   if ($('#chat-' + $(this).data().user).length > 0) {
+  //     console.log('istnieje');
+  //   } else {
+  //     axios.post('/getchat', {user: $(this).data().user, userid: $(this).data().userid}).then(response => {
+  //       chatContainer.prepend(response.data);
+  //       let thisChat = $('.live-chat').first().find('.chat-history');
+  //       thisChat.scrollTop(thisChat[0].scrollHeight);
+  //     });
+  //   }
+  // });
 
   socket.on('chatMessage', data => {
     let chatSelector = $('#chat-' + data.from);
@@ -116,7 +127,15 @@ $(function () {
 
 
   $('#searchResult').on('click', '#invite', function () {
-    console.log('click');
+    socket.emit('invite', $(this).data().username);
+    $('body').append(`<div class="animated fadeInLeft notification is-success invite-notification">Invite sent successfully</div>`);
+    setTimeout(function () {
+      $('.invite-notification').addClass('fadeOutLeft');
+    }, 4000);
+    $(this).hide();
+  });
+
+  $('#invite').on('click', function(){
     socket.emit('invite', $(this).data().username);
     $('body').append(`<div class="animated fadeInLeft notification is-success invite-notification">Invite sent successfully</div>`);
     setTimeout(function () {
@@ -148,9 +167,8 @@ $(function () {
     <i class="fa fa-times"></i></span></a><a class="accept" data-username=${data.from}><span class="icon"><i class="fa fa-check"></i></span></a><hr/></li>`);
   });
   socket.on('accept', data => {
-    console.log(data);
-    friendlist.append(`<li><div class="online">${data.slice(0, 2).toUpperCase()}</div><div>${data}</div>
-    <span class="icon action-icons"><i class="fa fa-envelope-o"></i><a href="/profile/${data}"><i class="fa fa-user-o"></i></a></span></li>`);
+    friendlist.append(`<li><div class="online">${data.user.slice(0, 2).toUpperCase()}</div><div>${data.user}</div>
+    <span class="icon action-icons"><i class="fa fa-envelope-o open-chat" data-user=${data.user} data-userid=${data.userId}></i><a href="/profile/${data.user}"><i class="fa fa-user-o"></i></a></span></li>`);
   });
 
   postButton.on('click', function () {
@@ -169,7 +187,7 @@ $(function () {
         postContainer.prepend(data.post);
       }
     }
-    else if (containerUser === data.shared) {
+    else {
       postContainer.prepend(data.post);
     }
   });

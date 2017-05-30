@@ -26,8 +26,9 @@ router.get('/:username', (req, res) => {
   else {
     res.locals.checkLikes = function (likes, user) {
       let liked = false;
+      console.log(likes);
       likes.forEach(like => {
-        if (like.username === user) {
+        if (user.equals( like) || user.equals(like._id)) {
           liked = true;
         }
       });
@@ -82,7 +83,10 @@ router.get('/:username', (req, res) => {
             friends = true;
           }
 
-          Post.find({$or: [{_creator: profile}, {to: profile}]}).populate('_creator to likes sharedPosts').then(posts => {
+          Post.find({$or: [{_creator: profile}, {to: profile}]}).populate({
+            path: 'sharedPosts _creator to likes',
+            populate: {path: 'likes'}
+          }).then(posts => {
             res.locals.shared = profile.sharedPosts;
             profile.sharedPosts.forEach(post => {
               posts.push(post);

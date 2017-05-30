@@ -1,5 +1,5 @@
 .column.is-10.animated.zoomIn
-  .card
+  .card(class = shared ? 'yellow' : '')
     .card-content
       .media
         .media-content
@@ -10,6 +10,9 @@
                 i.fa.fa-angle-double-right
               a.to(href='/profile/' + to)= to === user ? 'Me' : to
           p.subtitle.is-6 Just now
+            if shared
+              br
+              a.to(href='/profile/' + shared) shared by #{shared}
       div.post-actions
         i.fa.fa-heart.like(data-post = post._id)
         span.likes= post.likes.length
