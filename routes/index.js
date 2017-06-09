@@ -14,6 +14,7 @@ router.get('/', function (req, res) {
     res.redirect('/auth/login');
   }
   else {
+    req.session.openChats = [];
     User.findById(req.user).populate('friends invites sharedPosts').then(user => {
       let friends = [];
       let posts = [];
@@ -96,7 +97,6 @@ router.get('/shared', (req, res) => {
 });
 
 router.post('/getchat', (req, res) => {
-  console.log(req.body.user);
   if (req.body.user === "all") {
     var fn = pug.compileFile(path.join(__dirname, '../views/shared/chatWindow.pug'));
     let html = fn({user: "all", history: [], userid: ''});
@@ -109,8 +109,12 @@ router.post('/getchat', (req, res) => {
         ]).then(retrHistory => {
       var fn = pug.compileFile(path.join(__dirname, '../views/shared/chatWindow.pug'));
       let html = fn({user: req.body.user, userid: req.body.userid, history: retrHistory.history});
+      req.session.openChats.push(req.body.user);
       res.send(html);
     });
   }
+});
+router.get('/openChats', (req,res) => {
+  res.send(req.session.openChats);
 });
 module.exports = router;

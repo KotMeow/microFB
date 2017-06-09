@@ -197,7 +197,11 @@ module.exports.listen = function (io) {
               });
               retrHistory.save()
                   .then(() => {
-                    io.in(friend.username).emit('chatMessage', {from: user.username, content: data.content, fromId: user._id});
+                    io.in(friend.username).emit('chatMessage', {
+                      from: user.username,
+                      content: data.content,
+                      fromId: user._id
+                    });
                   })
                   .catch(err => {
                     console.log(err);

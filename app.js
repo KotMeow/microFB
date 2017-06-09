@@ -20,6 +20,7 @@ mongoose.connect('mongodb://localhost/test');
 var index = require('./routes/index');
 var profile = require('./routes/profile');
 var auth = require('./routes/auth');
+var files = require('./routes/files');
 
 var app = express();
 app.use(compression());

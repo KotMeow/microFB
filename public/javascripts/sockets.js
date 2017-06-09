@@ -15,6 +15,7 @@ $(function () {
   let openChatButton = $('.open-chat');
   let chatInput = $('.chat-input');
   let privateToAll = $('#private-to-all');
+
   friendlist.on('click', '.open-chat', function () {
     if ($('#chat-' + $(this).data().user).length > 0) {
       console.log('istnieje');
@@ -37,17 +38,7 @@ $(function () {
       });
     }
   });
-  // openChatButton.on('click', function () {
-  //   if ($('#chat-' + $(this).data().user).length > 0) {
-  //     console.log('istnieje');
-  //   } else {
-  //     axios.post('/getchat', {user: $(this).data().user, userid: $(this).data().userid}).then(response => {
-  //       chatContainer.prepend(response.data);
-  //       let thisChat = $('.live-chat').first().find('.chat-history');
-  //       thisChat.scrollTop(thisChat[0].scrollHeight);
-  //     });
-  //   }
-  // });
+
 
   socket.on('chatMessage', data => {
     let chatSelector = $('#chat-' + data.from);
@@ -55,8 +46,8 @@ $(function () {
     if (chatSelector.length > 0) {
       let thisChat = chatSelector.find('.chat-history');
       thisChat.append(`<div class="chat-message myMessage clearfix"><div class="chat-message-content clearfix"><h5>${data.from}</h5><p>${data.content}</p></div></div><hr/>`);
-      let count =parseInt(chatSelector.find('.message-count').text());
-      chatSelector.find('.message-count').text(count +1);
+      let count = parseInt(chatSelector.find('.message-count').text());
+      chatSelector.find('.message-count').text(count + 1);
       if (!chatSelector.find('.chat').is(':visible')) {
         chatSelector.find('.message-count').show();
       }
@@ -85,7 +76,9 @@ $(function () {
     }
   });
   $('#butt').on('click', () => {
-
+    axios.get('/openChats').then(response => {
+      console.log(response);
+    });
   });
   //delete animation class for notifications
 
@@ -150,7 +143,7 @@ $(function () {
     $(this).hide();
   });
 
-  $('#invite').on('click', function(){
+  $('#invite').on('click', function () {
     socket.emit('invite', $(this).data().username);
     $('body').append(`<div class="animated fadeInLeft notification is-success invite-notification">Invite sent successfully</div>`);
     setTimeout(function () {

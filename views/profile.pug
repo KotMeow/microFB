@@ -9,16 +9,32 @@ block content
   section.hero.is-dark
     .hero-body
       .container.has-text-centered
-        h1.title.is-1.capitalize
-          | #{profile.username}
-        h2.subtitle.is-5
-          | #{profile.email}
+
+        //nav.level
+        //  .level-item.has-text-centered
+        //    div
+        //      p.heading Posts
+        //      p.title= posts.length
+        //  .level-item.has-text-centered
+        //    div
+        //      p.heading Friends
+        //      p.title= profile.friends.length
         nav.level
-          .level-item.has-text-centered
+          .level-item
             div
               p.heading Posts
               p.title= posts.length
-          .level-item.has-text-centered
+          .level-item
+            if profile.avatar.data !== null
+              img(src="data:image/jpeg;base64," + profile.avatar.data.toString('base64')).avatar
+            else
+              img(src= 'https://cdn0.iconfinder.com/data/icons/iconshock_guys/512/andrew.png').avatar
+            .profile-info
+              h1.title.is-1.capitalize
+                | #{profile.username}
+              h2.subtitle.is-5
+                | #{profile.email}
+          .level-item
             div
               p.heading Friends
               p.title= profile.friends.length
@@ -30,14 +46,14 @@ block content
     .container.margin-50
       h1.title.is-2 Write something on #{profile.username} wall
       .columns.is-mobile.is-multiline
-        .column.is-10
+        .column.is-12
           .field
             p.control
               textarea.textarea.post-touser-input(placeholder='Write something to ' + profile.username + '!')
               button.button.is-primary.is-fullwidth#sendPostToUser(data-user = profile._id, data-username = profile.username ) Post!
       .columns.is-mobile.is-multiline#posts-container(data-user = profile.username)
           each post in posts
-            .column.is-10
+            .column.is-12
               .card(class = checkShared(post._id) ? 'yellow' : '')
                 .card-content
                   .media

@@ -11,7 +11,7 @@ block content
         .notification.is-danger
           each err in errors
             p=err.msg
-      form(role='form', action="/auth/register", method="post").white-form
+      form(role='form', action="/auth/register", method="post", enctype='multipart/form-data').white-form
         .field#username-field
           label.label Username
           p.control.has-icons-left.has-icons-right
@@ -31,6 +31,10 @@ block content
             input.input(type='password', placeholder='Password', name='password', required)
             span.icon.is-small.is-left
               i.fa.fa-lock
+        .field
+          label.label(for='file')
+            span#filename Click to choose profile picture
+          input(type='file', name= 'avatar', id='file').inputfile.inputfile-2
         .field.is-grouped.is-pulled-right
           p.control
             button.button.is-link

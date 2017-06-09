@@ -26,7 +26,6 @@ router.get('/:username', (req, res) => {
   else {
     res.locals.checkLikes = function (likes, user) {
       let liked = false;
-      console.log(likes);
       likes.forEach(like => {
         if (user.equals( like) || user.equals(like._id)) {
           liked = true;

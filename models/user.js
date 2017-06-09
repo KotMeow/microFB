@@ -7,8 +7,11 @@ var User = new Schema({
   password: String,
   email: String,
   avatar: {
-    data: Buffer,
-    contentType: String
+    data: {
+      type: Buffer,
+      default: null
+    },
+    contentType: String,
   },
   sharedPosts: [{type: mongoose.Schema.Types.ObjectId, ref: 'Post'}],
   invites: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],

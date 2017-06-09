@@ -2,6 +2,16 @@ $(function () {
   let usernameInput = $('#username');
   let usernameError = $('#username-error');
 
+  var file = document.getElementById("file");
+  file.onchange = function(){
+    if(file.files.length > 0)
+    {
+
+      document.getElementById('filename').innerHTML = 					file.files[0].name;
+
+    }
+  };
+
   usernameInput.on('blur', function () {
     if (usernameInput.val().length > 2) {
       axios.post('checkexist', {username: $(this).val()}).then(function (response) {
