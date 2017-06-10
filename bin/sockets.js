@@ -6,6 +6,9 @@ var passportSocketIo = require("passport.socketio");
 var Promise = require("bluebird");
 var pug = require('pug');
 var path = require('path');
+var uuid = require('node-uuid');
+var fs = require("fs");
+var Jimp = require("jimp");
 
 module.exports.listen = function (io) {
 
@@ -101,38 +104,96 @@ module.exports.listen = function (io) {
 
     socket.on('newpost', data => {
       let toUsername = data.username ? data.username : null;
+
       User.findById(socket.request.user).populate('friends')
           .then(user => {
-            var post = new Post({
-              content: data.content,
-              _creator: user._id,
-            });
-            post.to = data.to ? data.to : null;
-            post.save().then(post => {
-              var fn = pug.compileFile(path.join(__dirname, '../views/shared/post.pug'));
-              // Render function
-              user.friends.forEach(friend => {
-                let canShare = true;
+            if (data.file) {
+              var mimeType = data.file.split(';')[0].split(':')[1];
+              var base64Data = data.file.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
 
+              var filename = uuid.v4();
+              fs.writeFile(`uploads/${filename}`, base64Data, 'base64', function (err, test) {
+                fs.readFile(`uploads/${filename}`, (err, img) => {
+                  var post = new Post({
+                    content: data.content,
+                    _creator: user._id,
+                  });
+                  post.to = data.to ? data.to : null;
+                  post.image.data = img;
+                  post.image.contentType = mimeType;
+                  post.save().then(post => {
+                    var fn = pug.compileFile(path.join(__dirname, '../views/shared/post.pug'));
+                    // Render function
+                    user.friends.forEach(friend => {
+                      let canShare = true;
+                      let html = fn({
+                        post: post,
+                        author: user.username,
+                        user: friend.username,
+                        avatar: user.avatar.data,
+                        to: toUsername,
+                        canShare: canShare
+                      });
+                      io.in(friend.username).emit('newpost', {post: html, to: toUsername, creator: user.username});
+                    });
+                    let canShare = false;
+                    let html = fn({
+                      post: post,
+                      author: user.username,
+                      avatar: user.avatar.data,
+                      user: socket.request.user.username,
+                      to: toUsername,
+                      canShare: canShare
+                    });
+                    io.in(user.username).emit('newpost', {
+                      post: html,
+                      to: toUsername,
+                      creator: user.username,
+                      avatar: user.avatar.data
+                    });
+                  });
+                });
+              });
+            } else {
+              var post = new Post({
+                content: data.content,
+                _creator: user._id,
+              });
+
+              post.to = data.to ? data.to : null;
+              post.save().then(post => {
+                var fn = pug.compileFile(path.join(__dirname, '../views/shared/post.pug'));
+                // Render function
+                user.friends.forEach(friend => {
+                  let canShare = true;
+
+                  let html = fn({
+                    post: post,
+                    author: user.username,
+                    user: friend.username,
+                    avatar: user.avatar.data,
+                    to: toUsername,
+                    canShare: canShare
+                  });
+                  io.in(friend.username).emit('newpost', {post: html, to: toUsername, creator: user.username});
+                });
+                let canShare = false;
                 let html = fn({
                   post: post,
                   author: user.username,
-                  user: friend.username,
+                  avatar: user.avatar.data,
+                  user: socket.request.user.username,
                   to: toUsername,
                   canShare: canShare
                 });
-                io.in(friend.username).emit('newpost', {post: html, to: toUsername, creator: user.username});
+                io.in(user.username).emit('newpost', {
+                  post: html,
+                  to: toUsername,
+                  creator: user.username,
+                  avatar: user.avatar.data
+                });
               });
-              let canShare = false;
-              let html = fn({
-                post: post,
-                author: user.username,
-                user: socket.request.user.username,
-                to: toUsername,
-                canShare: canShare
-              });
-              io.in(user.username).emit('newpost', {post: html, to: toUsername, creator: user.username});
-            });
+            }
           })
           .catch(err => {
             console.log(err);
@@ -151,6 +212,7 @@ module.exports.listen = function (io) {
           let html = fn({
             post: post,
             author: post._creator.username,
+            avatar: post._creator.avatar.data,
             user: friend.username,
             to: to,
             canShare: false,
@@ -166,6 +228,7 @@ module.exports.listen = function (io) {
         let html = fn({
           post: post,
           author: post._creator.username,
+          avatar: post._creator.avatar.data,
           user: user.username,
           to: to,
           canShare: false,
@@ -229,6 +292,25 @@ module.exports.listen = function (io) {
               });
         });
       }
+    });
+
+    socket.on('base64 file', data => {
+      var mimeType = data.file.split(';')[0].split(':')[1];
+      var base64Data = data.file.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
+
+      var filename = uuid.v4();
+      fs.writeFile(`uploads/${filename}`, base64Data, 'base64', function (err, test) {
+        fs.readFile(`uploads/${filename}`, (err, data) => {
+          Post.findOne({}).then(post => {
+            post.image.data = data;
+            post.image.contentType = mimeType;
+            return post.save();
+          }).catch(err => {
+            console.log(err);
+          });
+        });
+      });
+
     });
 
   });

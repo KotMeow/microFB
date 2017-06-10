@@ -11,7 +11,10 @@ let Post = new Schema({
   content: String,
   likes: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   image: {
-    data: Buffer,
+    data: {
+      type: Buffer,
+      default: null
+    },
     contentType: String
   }
 });

@@ -15,7 +15,7 @@ var expressValidator = require('express-validator');
 const MongoStore = require('connect-mongo')(session);
 var compression = require('compression');
 
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://localhost/test2');
 
 var index = require('./routes/index');
 var profile = require('./routes/profile');
@@ -69,6 +69,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/profile', profile);
 app.use('/auth', auth);
+app.use('/files', files);
 
 var User = require('./models/user');
 passport.use(new LocalStrategy(User.authenticate()));

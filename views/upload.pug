@@ -1,6 +1,6 @@
 extends layout
 
 block content
-  form(method= 'post', enctype= 'multipart/form-data')
-    input(type = 'file', name= 'avatar')
-    button(type = 'submit') Upload
+  script(src='/javascripts/sockets.js')
+  input(type = 'file', name= 'avatar')#avatar-upload
+  button#upload Upload

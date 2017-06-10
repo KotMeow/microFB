@@ -7,23 +7,33 @@ block content
   include ./shared/navbar
   include ./shared/sidebar
   .container
-    button#butt Butt
-    h1.title.is-1 Share some thoughts #{user.username}!
     .columns.is-mobile.is-multiline
-      .column.is-10
+      .column.is-offset-2.is-8
+        h1.title.is-1 Share some thoughts #{user.username}!
         .field
           p.control
             textarea.textarea.post-input(placeholder='Write something!')
+            input(type='file')#upload-image
             button.button.is-primary.is-fullwidth#sendPost Post!
     .columns.is-mobile.is-multiline#posts-container
       each post in posts
-        .column.is-10
+        .column.is-offset-2.is-8
           .card
+            if post.image.data !== null
+              .card-image
+                figure.image.is-4by3
+                  img(src="data:image/jpg;base64," + post.image.data.toString('base64'))
             .card-content
               .media
+                .media-left
+                  figure.image.is-48x48
+                    if post._creator.avatar.data !== null
+                      img(src="data:image/jpg;base64," + post._creator.avatar.data.toString('base64'))
+                    else
+                      img(src= 'http://icon-icons.com/icons2/1070/PNG/512/darth-vader_icon-icons.com_76959.png')
                 .media-content
                   p.title.is-4
-                    a.from(href='/profile/' + post._creator.username)= post._creator.username === user.username ?  'Me' : post._creator.username
+                    a.from(href='/profile/' + post._creator.username).capitalize= post._creator.username === user.username ?  'Me' : post._creator.username
                     if post.to
                       span.icon
                         i.fa.fa-angle-double-right

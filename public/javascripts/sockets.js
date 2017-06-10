@@ -16,6 +16,56 @@ $(function () {
   let chatInput = $('.chat-input');
   let privateToAll = $('#private-to-all');
 
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        $('#blah').attr('src', e.target.result);
+      }
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  $("#upload-image").change(function(){
+    readURL(this);
+  });
+
+  $('#upload').on('click', function(e){
+    let file = document.getElementById('avatar-upload').files[0];
+    console.log(file);
+    readThenSendFile(file);
+  });
+
+  function readThenSendFile(data, content){
+
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      var msg ={};
+      msg.file = evt.target.result;
+      msg.content = content;
+      socket.emit('newpost', msg);
+    };
+    reader.readAsDataURL(data);
+  }
+  function readThenSendFileToFriend(data, content, to, username){
+
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      var msg ={};
+      msg.file = evt.target.result;
+      msg.content = content;
+      msg.to = to;
+      msg.username = username;
+      socket.emit('newpost', msg);
+    };
+    reader.readAsDataURL(data);
+  }
+
+
+
+
   friendlist.on('click', '.open-chat', function () {
     if ($('#chat-' + $(this).data().user).length > 0) {
       console.log('istnieje');
@@ -115,11 +165,17 @@ $(function () {
   }, 10000);
 
   postToUserButton.on('click', function () {
-    socket.emit('newpost', {
-      content: postToUserInput.val(),
-      to: $(this).data().user,
-      username: $(this).data().username
-    });
+    let file = document.getElementById('upload-image').files[0];
+    if (file) {
+      readThenSendFileToFriend(file, postToUserInput.val(), $(this).data().user, $(this).data().username);
+    } else {
+      socket.emit('newpost', {
+        content: postToUserInput.val(),
+        to: $(this).data().user,
+        username: $(this).data().username
+      });
+    }
+
   });
 
   notificationList.on('click', '.accept', function () {
@@ -180,7 +236,13 @@ $(function () {
   });
 
   postButton.on('click', function () {
-    socket.emit('newpost', {content: postInput.val()});
+    let file = document.getElementById('upload-image').files[0];
+    if (file) {
+      readThenSendFile(file, postInput.val());
+    } else {
+      socket.emit('newpost', {content: postInput.val()});
+    }
+
     postInput.val(" ");
     postInput.focus();
   });

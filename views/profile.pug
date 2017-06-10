@@ -28,35 +28,46 @@ block content
             if profile.avatar.data !== null
               img(src="data:image/jpeg;base64," + profile.avatar.data.toString('base64')).avatar
             else
-              img(src= 'https://cdn0.iconfinder.com/data/icons/iconshock_guys/512/andrew.png').avatar
+              img(src= 'http://icon-icons.com/icons2/1070/PNG/512/darth-vader_icon-icons.com_76959.png').avatar
             .profile-info
               h1.title.is-1.capitalize
                 | #{profile.username}
               h2.subtitle.is-5
                 | #{profile.email}
+            h3.subtitle
+              unless friends || inviteSent
+                span.icon
+                  i.fa.fa-user-plus#invite(data-username="" + profile.username)
           .level-item
             div
               p.heading Friends
               p.title= profile.friends.length
-        h3.subtitle
-          unless friends || inviteSent
-            span.icon
-              i.fa.fa-user-plus#invite(data-username="" +profile.username)
   if friends
     .container.margin-50
-      h1.title.is-2 Write something on #{profile.username} wall
       .columns.is-mobile.is-multiline
-        .column.is-12
+        .column.is-8.is-offset-2
+          h1.title.is-2 Write something on #{profile.username} wall
           .field
             p.control
               textarea.textarea.post-touser-input(placeholder='Write something to ' + profile.username + '!')
+              input(type='file')#upload-image
               button.button.is-primary.is-fullwidth#sendPostToUser(data-user = profile._id, data-username = profile.username ) Post!
       .columns.is-mobile.is-multiline#posts-container(data-user = profile.username)
           each post in posts
-            .column.is-12
+            .column.is-offset-2.is-8
               .card(class = checkShared(post._id) ? 'yellow' : '')
+                if post.image.data !== null
+                  .card-image
+                    figure.image.is-4by3
+                      img(src="data:image/jpg;base64," + post.image.data.toString('base64'))
                 .card-content
                   .media
+                    .media-left
+                      figure.image.is-48x48
+                        if post._creator.avatar.data !== null
+                          img(src="data:image/jpeg;base64," + post._creator.avatar.data.toString('base64'))
+                        else
+                          img(src= 'http://icon-icons.com/icons2/1070/PNG/512/darth-vader_icon-icons.com_76959.png')
                     .media-content
                       p.title.is-4
                         a.from(href='/profile/' + post._creator.username)= post._creator.username === user.username ? 'Me' : post._creator.username

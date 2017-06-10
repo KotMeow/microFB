@@ -1,7 +1,17 @@
-.column.is-10.animated.zoomIn
+.column.is-offset-2.is-8.animated.zoomIn
   .card(class = shared ? 'yellow' : '')
+    if post.image.data !== null
+      .card-image
+        figure.image.is-4by3
+          img(src="data:image/jpg;base64," + post.image.data.toString('base64'))
     .card-content
       .media
+        .media-left
+          figure.image.is-48x48
+            if avatar !== null
+              img(src="data:image/jpeg;base64," + avatar.toString('base64'))
+            else
+              img(src= 'http://icon-icons.com/icons2/1070/PNG/512/darth-vader_icon-icons.com_76959.png')
         .media-content
           p.title.is-4
             a.from(href='/profile/' + author)= author === user ? 'Me' : author
