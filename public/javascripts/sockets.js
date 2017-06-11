@@ -257,5 +257,8 @@ $(function () {
       changeHashtags();
     }
   });
-
+  var colors = ['is-primary', 'is-danger', 'is-warning', 'is-success', 'is-primary is-bold', 'is-success is-bold', 'is-warning is-bold', 'is-danger is-bold'];
+  var index = Math.floor(Math.random() * colors.length);
+  var color = colors[index];
+  $('#hashtag').addClass(color);
 });
