@@ -68,6 +68,7 @@ router.get('/', function (req, res) {
 router.post('/like', (req, res) => {
   let liked = false;
   let element;
+
   Post.findById(req.body.post).populate('likes')
       .then(post => {
         post.likes.forEach((like, index) => {
@@ -93,6 +94,44 @@ router.get('/shared', (req, res) => {
   User.findById(req.user).populate('sharedPosts').then(user => {
     res.send(user);
   });
+});
+
+router.get('/tag/:tag', (req, res) => {
+
+  Promise.all([User.findById(req.user).populate('friends invites sharedPosts'), Post.find({tags: req.params.tag}).populate('_creator to likes')])
+      .spread((user, posts) => {
+        res.locals.checkLikes = function (likes, user) {
+          let liked = false;
+          likes.forEach(like => {
+            if (like.username === user.username) {
+              liked = true;
+            }
+          });
+          return liked;
+        };
+        res.locals.checkCanShare = function (post, user) {
+          let canShare = true;
+          let to = post.to === undefined || post.to === null ? '' : post.to.username;
+          if (to.localeCompare(user) === 0 || post._creator.username.localeCompare(user) === 0) {
+            canShare = false;
+          }
+          res.locals.shared.forEach(sharedPost => {
+            if (sharedPost._id.toString() === post._id.toString()) {
+              canShare = false;
+            }
+          });
+          return canShare;
+
+        };
+
+        posts = _.sortBy(posts, function (o) {
+          return new moment(o.date);
+        }).reverse();
+
+        res.locals.shared = user.sharedPosts;
+        res.render('tagWall', {tag: req.params.tag, user: user, posts: posts});
+      });
+
 });
 
 router.post('/getchat', (req, res) => {

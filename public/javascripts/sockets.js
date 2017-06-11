@@ -236,12 +236,18 @@ $(function () {
 
   socket.on('newpost', data => {
     let containerUser = postContainer.data().user;
+    let containerTag = postContainer.data().tag;
+    console.log(data.tags);
     if (!data.shared) {
       if (containerUser === data.creator || containerUser === data.to) {
         postContainer.prepend(data.post);
         changeHashtags();
       }
-      if (containerUser === undefined) {
+      if ($.inArray(containerTag, data.tags) !== -1) {
+        postContainer.prepend(data.post);
+        changeHashtags();
+      }
+      if (containerUser === undefined && containerTag === undefined) {
         postContainer.prepend(data.post);
         changeHashtags();
       }

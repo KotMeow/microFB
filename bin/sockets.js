@@ -117,7 +117,7 @@ module.exports.listen = function (io) {
               var base64Data = data.file.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
 
               var filename = uuid.v4();
-              fs.writeFile(`uploads/${filename}`, base64Data, 'base64', err =>{
+              fs.writeFile(`uploads/${filename}`, base64Data, 'base64', err => {
                 if (err) {
                   console.log(err);
                 }
@@ -143,7 +143,12 @@ module.exports.listen = function (io) {
                         to: toUsername,
                         canShare: canShare
                       });
-                      io.in(friend.username).emit('newpost', {post: html, to: toUsername, creator: user.username});
+                      io.in(friend.username).emit('newpost', {
+                        post: html,
+                        to: toUsername,
+                        creator: user.username,
+                        tags: tags
+                      });
                     });
                     let canShare = false;
                     let html = fn({
@@ -158,7 +163,8 @@ module.exports.listen = function (io) {
                       post: html,
                       to: toUsername,
                       creator: user.username,
-                      avatar: user.avatar.data
+                      avatar: user.avatar.data,
+                      tags: tags
                     });
                   });
                 });
@@ -184,7 +190,7 @@ module.exports.listen = function (io) {
                     to: toUsername,
                     canShare: canShare
                   });
-                  io.in(friend.username).emit('newpost', {post: html, to: toUsername, creator: user.username});
+                  io.in(friend.username).emit('newpost', {post: html, to: toUsername, creator: user.username, tags: tags});
                 });
                 let canShare = false;
                 let html = fn({
@@ -199,7 +205,8 @@ module.exports.listen = function (io) {
                   post: html,
                   to: toUsername,
                   creator: user.username,
-                  avatar: user.avatar.data
+                  avatar: user.avatar.data,
+                  tags: tags
                 });
               });
             }
