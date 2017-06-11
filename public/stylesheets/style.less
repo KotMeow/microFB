@@ -265,7 +265,7 @@ hr {
 
 
 
-.post-input {
+.post-input, .post-touser-input {
   resize: none;
 }
 
@@ -284,12 +284,17 @@ hr {
 }
 
 .invite-notification {
-  position: absolute;
+  position: fixed;
   bottom: 50px;
   left: 50px;
   width: 250px;
 }
-
+.wrongfile-notification {
+  position: fixed;
+  bottom: 50px;
+  left: 50px;
+  width: 300px;
+}
 .fa-angle-double-right {
   color: @primary;
 }
@@ -551,3 +556,10 @@ figure.image.is-48x48 {
   max-height: 200px;
 }
 
+.search-result {
+  margin-left: 0;
+  margin-top: 2px;
+}
+.hashTag {
+  color: @blue;
+}

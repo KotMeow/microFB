@@ -1,11 +1,12 @@
 $(function () {
   var box = $('.notification-box');
   let notifybutton = $('.notify');
+  let chatContainer = $('.chat-container');
   notifybutton.on('click', function () {
     $('.notification-icon').css('color', '#7a7a7a');
     box.toggle('fast');
   });
-  $('.chat-container').on('click', '.live-chat header', function () {
+  chatContainer.on('click', '.live-chat header', function () {
 
     $(this).next().slideToggle(200, 'swing');
     $(this).next().find('.chat-history').scrollTop($(this).next().find('.chat-history')[0].scrollHeight);
@@ -19,8 +20,7 @@ $(function () {
       $(this).find('.message-count').html(0);
     }
   });
-  $('.chat-container').on('click', '.chat-close', function (e) {
-    console.log($(this).parent().parent());
+  chatContainer.on('click', '.chat-close', function (e) {
     let x = $(this).parent().parent();
     e.preventDefault();
     x.fadeOut(300);

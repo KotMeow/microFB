@@ -70,7 +70,6 @@ router.post('/like', (req, res) => {
   let element;
   Post.findById(req.body.post).populate('likes')
       .then(post => {
-
         post.likes.forEach((like, index) => {
           if (req.user.username === like.username) {
             liked = true;
@@ -86,7 +85,7 @@ router.post('/like', (req, res) => {
         return post.save();
       })
       .then((post) => {
-        res.send(post);
+        res.send(post.likes);
       });
 });
 
@@ -114,7 +113,7 @@ router.post('/getchat', (req, res) => {
     });
   }
 });
-router.get('/openChats', (req,res) => {
+router.get('/openChats', (req, res) => {
   res.send(req.session.openChats);
 });
 module.exports = router;

@@ -18,20 +18,17 @@ $(function () {
           searchBox.show();
         }
         response.data.forEach(result => {
-          searchResult.append(`<tr><td><a href="/profile/${result.username}">${result.username}</a></td><td><span id="invite" data-username=${result.username} style="margin-left: 10px"><i class="fa fa-user-plus fa-lg"></i></span></td></tr>`);
+          let appendResult = `<tr><td><a href="/profile/${result.user}">${result.user}</a></td>`;
+          if (!result.isFriend) {
+            appendResult += `<td><span id="invite" data-username=${result.user}><i class="fa fa-user-plus fa-lg search-result"></i></span>`;
+          }
+          appendResult += `</td></tr>`;
+          searchResult.append(appendResult);
         });
-
-
       });
     } else {
       searchBox.hide();
     }
   });
-  //     .focusout(function () {
-  //   setTimeout(function () {
-  //     searchResult.html('');
-  //     searchBox.hide();
-  //   }, 2000);
-  // });
 });
   

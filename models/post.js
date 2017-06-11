@@ -9,6 +9,7 @@ let Post = new Schema({
     default: Date.now
   },
   content: String,
+  tags: [String],
   likes: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   image: {
     data: {

@@ -8,7 +8,6 @@ var pug = require('pug');
 var path = require('path');
 var uuid = require('node-uuid');
 var fs = require("fs");
-var Jimp = require("jimp");
 
 module.exports.listen = function (io) {
 
@@ -104,6 +103,12 @@ module.exports.listen = function (io) {
 
     socket.on('newpost', data => {
       let toUsername = data.username ? data.username : null;
+      let tags = data.content.match(/#(\S+)/g);
+      if (tags) {
+        tags.forEach((part, index, arr) => {
+          arr[index] = arr[index].split('#')[1];
+        });
+      }
 
       User.findById(socket.request.user).populate('friends')
           .then(user => {
@@ -112,11 +117,15 @@ module.exports.listen = function (io) {
               var base64Data = data.file.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
 
               var filename = uuid.v4();
-              fs.writeFile(`uploads/${filename}`, base64Data, 'base64', function (err, test) {
+              fs.writeFile(`uploads/${filename}`, base64Data, 'base64', err =>{
+                if (err) {
+                  console.log(err);
+                }
                 fs.readFile(`uploads/${filename}`, (err, img) => {
                   var post = new Post({
                     content: data.content,
                     _creator: user._id,
+                    tags: tags
                   });
                   post.to = data.to ? data.to : null;
                   post.image.data = img;
@@ -158,8 +167,8 @@ module.exports.listen = function (io) {
               var post = new Post({
                 content: data.content,
                 _creator: user._id,
+                tags: tags
               });
-
               post.to = data.to ? data.to : null;
               post.save().then(post => {
                 var fn = pug.compileFile(path.join(__dirname, '../views/shared/post.pug'));
@@ -199,6 +208,7 @@ module.exports.listen = function (io) {
             console.log(err);
           });
     });
+
     socket.on('sharePost', data => {
       Promise.all([
         User.findById(socket.request.user).populate('friends'),
@@ -292,25 +302,6 @@ module.exports.listen = function (io) {
               });
         });
       }
-    });
-
-    socket.on('base64 file', data => {
-      var mimeType = data.file.split(';')[0].split(':')[1];
-      var base64Data = data.file.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
-
-      var filename = uuid.v4();
-      fs.writeFile(`uploads/${filename}`, base64Data, 'base64', function (err, test) {
-        fs.readFile(`uploads/${filename}`, (err, data) => {
-          Post.findOne({}).then(post => {
-            post.image.data = data;
-            post.image.contentType = mimeType;
-            return post.save();
-          }).catch(err => {
-            console.log(err);
-          });
-        });
-      });
-
     });
 
   });

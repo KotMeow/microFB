@@ -1,7 +1,6 @@
 $(function () {
 
   var socket = io();
-  //socket.emit('join');
 
   let friendlist = $('#friend-list');
   let noinvites = $('#no-invites');
@@ -12,64 +11,59 @@ $(function () {
   let postToUserButton = $('#sendPostToUser');
   let postToUserInput = $('.post-touser-input');
   let chatContainer = $('.chat-container');
-  let openChatButton = $('.open-chat');
-  let chatInput = $('.chat-input');
   let privateToAll = $('#private-to-all');
 
-  function readURL(input) {
-    if (input.files && input.files[0]) {
-      var reader = new FileReader();
-
-      reader.onload = function (e) {
-        $('#blah').attr('src', e.target.result);
-      }
-
-      reader.readAsDataURL(input.files[0]);
-    }
-  }
-
-  $("#upload-image").change(function(){
-    readURL(this);
-  });
-
-  $('#upload').on('click', function(e){
-    let file = document.getElementById('avatar-upload').files[0];
-    console.log(file);
-    readThenSendFile(file);
-  });
-
-  function readThenSendFile(data, content){
-
+  let changeHashtags = function() {
+    $('.content').each(function() {
+     this.innerHTML = this.innerHTML.replace(/#(\S+)/g,'<a href="/tag/$1" class="hashTag">#$1</a>');
+    });
+  };
+  changeHashtags();
+  let readThenSendFile = (data, content) => {
     var reader = new FileReader();
-    reader.onload = function(evt){
-      var msg ={};
+    reader.onload = function (evt) {
+      var msg = {};
       msg.file = evt.target.result;
       msg.content = content;
-      socket.emit('newpost', msg);
+      if (msg.file.split(';')[0].split(':')[1].split('/')[0] === 'image') {
+        socket.emit('newpost', msg);
+        document.getElementById('upload-image').value = '';
+        postInput.val('');
+      } else {
+        $('body').append(`<div class="animated fadeInLeft notification is-danger wrongfile-notification">Only image files can be posted!</div>`);
+        setTimeout(function () {
+          $('.wrongfile-notification').addClass('fadeOutLeft');
+        }, 2000);
+      }
     };
     reader.readAsDataURL(data);
-  }
-  function readThenSendFileToFriend(data, content, to, username){
+  };
 
+  let readThenSendFileToFriend = (data, content, to, username) => {
     var reader = new FileReader();
-    reader.onload = function(evt){
-      var msg ={};
+    reader.onload = function (evt) {
+      var msg = {};
       msg.file = evt.target.result;
       msg.content = content;
       msg.to = to;
       msg.username = username;
-      socket.emit('newpost', msg);
+      if (msg.file.split(';')[0].split(':')[1].split('/')[0] === 'image') {
+        socket.emit('newpost', msg);
+        document.getElementById('upload-image').value = '';
+        postInput.val('');
+      } else {
+        $('body').append(`<div class="animated fadeInLeft notification is-danger wrongfile-notification">Only image files can be posted!</div>`);
+        setTimeout(function () {
+          $('.wrongfile-notification').addClass('fadeOutLeft');
+        }, 2000);
+      }
     };
     reader.readAsDataURL(data);
-  }
-
-
+  };
 
 
   friendlist.on('click', '.open-chat', function () {
-    if ($('#chat-' + $(this).data().user).length > 0) {
-      console.log('istnieje');
-    } else {
+    if ($('#chat-' + $(this).data().user).length === 0) {
       axios.post('/getchat', {user: $(this).data().user, userid: $(this).data().userid}).then(response => {
         chatContainer.prepend(response.data);
         let thisChat = $('.live-chat').first().find('.chat-history');
@@ -77,10 +71,9 @@ $(function () {
       });
     }
   });
+
   privateToAll.on('click', function () {
-    if ($('#chat-all').length > 0) {
-      console.log('istnieje');
-    } else {
+    if ($('#chat-all').length === 0) {
       axios.post('/getchat', {user: "all"}).then(response => {
         chatContainer.prepend(response.data);
         let thisChat = $('.live-chat').first().find('.chat-history');
@@ -92,7 +85,6 @@ $(function () {
 
   socket.on('chatMessage', data => {
     let chatSelector = $('#chat-' + data.from);
-    console.log(chatSelector.length);
     if (chatSelector.length > 0) {
       let thisChat = chatSelector.find('.chat-history');
       thisChat.append(`<div class="chat-message myMessage clearfix"><div class="chat-message-content clearfix"><h5>${data.from}</h5><p>${data.content}</p></div></div><hr/>`);
@@ -125,11 +117,7 @@ $(function () {
       $(this).val('');
     }
   });
-  $('#butt').on('click', () => {
-    axios.get('/openChats').then(response => {
-      console.log(response);
-    });
-  });
+
   //delete animation class for notifications
 
   $('.notification-icon').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
@@ -148,7 +136,7 @@ $(function () {
   postContainer.on('click', '.like', function () {
     $(this).toggleClass('liked');
     axios.post('/like', {post: $(this).data().post}).then(response => {
-      $(this).next().html(response.data.likes.length);
+      $(this).next().html(response.data.length);
     });
   });
   postContainer.on('click', '.share', function () {
@@ -164,19 +152,6 @@ $(function () {
     socket.emit('onlineUsers');
   }, 10000);
 
-  postToUserButton.on('click', function () {
-    let file = document.getElementById('upload-image').files[0];
-    if (file) {
-      readThenSendFileToFriend(file, postToUserInput.val(), $(this).data().user, $(this).data().username);
-    } else {
-      socket.emit('newpost', {
-        content: postToUserInput.val(),
-        to: $(this).data().user,
-        username: $(this).data().username
-      });
-    }
-
-  });
 
   notificationList.on('click', '.accept', function () {
     socket.emit('accept', $(this).data().username);
@@ -184,7 +159,6 @@ $(function () {
   });
 
   notificationList.on('click', '.decline', function () {
-    console.log($(this));
     socket.emit('decline', $(this).data().username);
     checkInvites.call($(this));
   });
@@ -235,15 +209,28 @@ $(function () {
     <span class="icon action-icons"><i class="fa fa-envelope-o open-chat" data-user=${data.user} data-userid=${data.userId}></i><a href="/profile/${data.user}"><i class="fa fa-user-o"></i></a></span></li>`);
   });
 
+  postToUserButton.on('click', function () {
+    let file = document.getElementById('upload-image').files[0];
+    if (file && postToUserInput.val().length > 2) {
+      readThenSendFileToFriend(file, postToUserInput.val(), $(this).data().user, $(this).data().username);
+    } else if (postToUserInput.val().length > 2) {
+      socket.emit('newpost', {
+        content: postToUserInput.val(),
+        to: $(this).data().user,
+        username: $(this).data().username
+      });
+    }
+  });
+
   postButton.on('click', function () {
     let file = document.getElementById('upload-image').files[0];
-    if (file) {
+    if (file && postInput.val().length > 2) {
       readThenSendFile(file, postInput.val());
-    } else {
+    } else if (postInput.val().length > 2) {
       socket.emit('newpost', {content: postInput.val()});
+      document.getElementById('upload-image').value = '';
+      postInput.val('');
     }
-
-    postInput.val(" ");
     postInput.focus();
   });
 
@@ -252,13 +239,16 @@ $(function () {
     if (!data.shared) {
       if (containerUser === data.creator || containerUser === data.to) {
         postContainer.prepend(data.post);
+        changeHashtags();
       }
       if (containerUser === undefined) {
         postContainer.prepend(data.post);
+        changeHashtags();
       }
     }
     else {
       postContainer.prepend(data.post);
+      changeHashtags();
     }
   });
 

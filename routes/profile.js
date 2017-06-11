@@ -110,13 +110,27 @@ router.get('/:username', (req, res) => {
 });
 
 router.get('/search/:name', (req, res) => {
-  User.find({username: {$regex: `.*${req.params.name}.*`, $options: 'i'}}).then(users => {
-    users.forEach((user, index) => {
-      if (user.username.toLowerCase() === req.user.username.toLowerCase()) {
-        users.splice(index, 1);
+  User.find({username: {$regex: `.*${req.params.name}.*`, $options: 'i'}}).populate('friends').then(users => {
+    let found = [];
+    users.forEach(user => {
+      if (user.username.toLowerCase() !== req.user.username.toLowerCase()) {
+        var isInArray = req.user.friends.some(function (friend) {
+          return friend.equals(user._id);
+        });
+        if (isInArray) {
+          found.push({
+            user: user.username,
+            isFriend: true
+          });
+        } else {
+          found.push({
+            user: user.username,
+            isFriend: false
+          });
+        }
       }
     });
-    res.send(users);
+    res.send(found);
   });
 });
 
