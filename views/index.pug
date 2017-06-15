@@ -7,18 +7,19 @@ block content
   include ./shared/navbar
   include ./shared/sidebar
   .container.margin-50
-    .columns.is-mobile.is-multiline
+    .columns.is-multiline
       .column.is-offset-2.is-8
         h1.title.is-1 Share some thoughts #{user.username}!
+        button#butt Butt
         .field
           p.control
             textarea.textarea.post-input(placeholder='Write something!')
             input(type='file')#upload-image
             button.button.is-primary.is-fullwidth#sendPost Post!
-    .columns.is-mobile.is-multiline#posts-container
+    .columns.is-multiline#posts-container
       each post in posts
         .column.is-offset-2.is-8
-          .card
+          .card(id= post._id)
             if post.image.data !== null
               .card-image
                 figure.image.is-4by3

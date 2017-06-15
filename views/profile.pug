@@ -34,18 +34,19 @@ block content
               p.title= profile.friends.length
   if friends
     .container.margin-50
-      .columns.is-mobile.is-multiline
-        .column.is-8.is-offset-2
-          h1.title.is-2 Write something on #{profile.username} wall
-          .field
-            p.control
-              textarea.textarea.post-touser-input(placeholder='Write something to ' + profile.username + '!')
-              input(type='file')#upload-image
-              button.button.is-primary.is-fullwidth#sendPostToUser(data-user = profile._id, data-username = profile.username ) Post!
+      if profile.username !== user.username
+        .columns.is-mobile.is-multiline
+          .column.is-8.is-offset-2
+            h1.title.is-2 Write something on #{profile.username} wall
+            .field
+              p.control
+                textarea.textarea.post-touser-input(placeholder='Write something to ' + profile.username + '!')
+                input(type='file')#upload-image
+                button.button.is-primary.is-fullwidth#sendPostToUser(data-user = profile._id, data-username = profile.username ) Post!
       .columns.is-mobile.is-multiline#posts-container(data-user = profile.username)
           each post in posts
             .column.is-offset-2.is-8
-              .card(class = checkShared(post._id) ? 'yellow' : '')
+              .card(class = checkShared(post._id) ? 'yellow' : '', id= post._id)
                 if post.image.data !== null
                   .card-image
                     figure.image.is-4by3

@@ -311,6 +311,13 @@ module.exports.listen = function (io) {
       }
     });
 
+    socket.on('like', data => {
+      User.findById(socket.request.user).populate('friends').then(user => {
+        user.friends.forEach(friend => {
+          io.in(friend.username).emit('like', data);
+        });
+      });
+    });
   });
 
   return io;

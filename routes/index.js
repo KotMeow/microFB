@@ -86,7 +86,8 @@ router.post('/like', (req, res) => {
         return post.save();
       })
       .then((post) => {
-        res.send(post.likes);
+        console.log(post);
+        res.send({likes: post.likes.length, id: post.id});
       });
 });
 

@@ -13,6 +13,19 @@ $(function () {
   let chatContainer = $('.chat-container');
   let privateToAll = $('#private-to-all');
 
+  $('#butt').on('click', function() {
+    $('#59428e74b7c7951468fd4f39').find('.likes').text(5);
+  });
+
+  socket.on('like', data => {
+    let post = $(`#${data.id}`);
+    post.find('.likes').text(data.likes);
+    post.find('.like').addClass('animated jello');
+    post.find('.like').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+      post.find('.like').removeClass('animated jello');
+    });
+  });
+
   let changeHashtags = function() {
     $('.content').each(function() {
      this.innerHTML = this.innerHTML.replace(/#(\S+)/g,'<a href="/tag/$1" class="hashTag">#$1</a>');
@@ -136,7 +149,8 @@ $(function () {
   postContainer.on('click', '.like', function () {
     $(this).toggleClass('liked');
     axios.post('/like', {post: $(this).data().post}).then(response => {
-      $(this).next().html(response.data.length);
+      $(this).next().html(response.data.likes);
+      socket.emit('like', response.data);
     });
   });
   postContainer.on('click', '.share', function () {

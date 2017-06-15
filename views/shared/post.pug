@@ -1,5 +1,5 @@
 .column.is-offset-2.is-8.animated.zoomIn
-  .card(class = shared ? 'yellow' : '')
+  .card(class = shared ? 'yellow' : '', id= post._id)
     if post.image.data !== null
       .card-image
         figure.image.is-4by3
