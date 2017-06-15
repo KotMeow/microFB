@@ -62,7 +62,7 @@ router.get('/:username', (req, res) => {
       }),
       User.findOne({username: req.params.username}).populate({
         path: 'invites sharedPosts',
-        populate: {path: '_creator to'}
+        populate: {path: '_creator to comments.author'}
       })])
         .spread((user, profile) => {
           res.locals.sharedPosts = user.sharedPosts;

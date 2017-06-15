@@ -99,7 +99,7 @@ router.get('/shared', (req, res) => {
 
 router.get('/tag/:tag', (req, res) => {
 
-  Promise.all([User.findById(req.user).populate('friends invites sharedPosts'), Post.find({tags: req.params.tag}).populate('_creator to likes')])
+  Promise.all([User.findById(req.user).populate('friends invites sharedPosts'), Post.find({tags: req.params.tag}).populate('_creator to likes comments.author')])
       .spread((user, posts) => {
         res.locals.checkLikes = function (likes, user) {
           let liked = false;
