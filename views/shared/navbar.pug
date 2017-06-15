@@ -21,6 +21,10 @@ nav.nav
     a.nav-item#private-to-all
       span.icon
         i.fa.fa-envelope
+    input.input.nav-item.user-search-input(type='text')
+    .box.search-box.content
+      table
+        tbody#searchResult
   .nav-center
     a.nav-item(href="http://www.github.com/kotmeow")
       span.icon
@@ -32,10 +36,6 @@ nav.nav
   // This "nav-menu" is hidden on mobile
   // Add the modifier "is-active" to display it on mobile
   .nav-right.nav-menu#nav-menu
-    input.input.nav-item.user-search-input(type='text')
-    .box.search-box.content
-      table
-        tbody#searchResult
     a(href='/profile/' + user.username).nav-item.capitalize
       | #{user.username}
     a(href='/auth/logout')#logOut.nav-item

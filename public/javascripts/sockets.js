@@ -49,7 +49,7 @@ $(function () {
 
   let changeHashtags = function() {
     $('.content').each(function() {
-     this.innerHTML = this.innerHTML.replace(/#(\S+)/g,'<a href="/tag/$1" class="hashTag">#$1</a>');
+     this.innerHTML = this.innerHTML.replace(/\s#(\S+)/g,' <a href="/tag/$1" class="hashTag">#$1</a>');
     });
   };
   changeHashtags();
