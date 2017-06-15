@@ -73,5 +73,22 @@ block content
                     if (checkCanShare(post, user.username))
                       i.fa.fa-share.share.share(data-post = post._id)
                   .content= post.content
+                  hr
+                  div(data-postid = post.id).comment-container
+                    each comment in post.comments
+                      article.media
+                        figure.media-left
+                          p.image.is-32x32
+                            if comment.author.avatar.data !== null
+                              img(src="data:image/jpg;base64," + comment.author.avatar.data.toString('base64'))
+                            else
+                              img(src= 'http://icon-icons.com/icons2/1070/PNG/512/darth-vader_icon-icons.com_76959.png')
+                        .media-content
+                          .content
+                            p.comment-content
+                              strong.capitalize= comment.author.username
+                              br
+                              | #{comment.content}
+                  input(type= 'text', placeholder= 'Comment!', data-postid = post.id).input.comment-input.margin-10
   .chat-container
 

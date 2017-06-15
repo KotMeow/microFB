@@ -83,7 +83,7 @@ router.get('/:username', (req, res) => {
           }
 
           Post.find({$or: [{_creator: profile}, {to: profile}]}).populate({
-            path: 'sharedPosts _creator to likes',
+            path: 'sharedPosts _creator to likes comments.author',
             populate: {path: 'likes'}
           }).then(posts => {
             res.locals.shared = profile.sharedPosts;

@@ -1,6 +1,11 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+let commentSchema = new Schema({
+  author: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  content: String
+},{ _id : false });
+
 let Post = new Schema({
   _creator: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   to: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
@@ -10,6 +15,7 @@ let Post = new Schema({
   },
   content: String,
   tags: [String],
+  comments: [commentSchema],
   likes: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   image: {
     data: {

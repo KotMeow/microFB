@@ -24,7 +24,7 @@ router.get('/', function (req, res) {
       });
       friends.push(req.user._id);
       Promise.reduce(friends, function (total, friend) {
-        return Post.find({_creator: friend}).populate('_creator to likes').then(function (post) {
+        return Post.find({_creator: friend}).populate('_creator to likes comments.author').then(function (post) {
           post.forEach(po => {
             posts.push(po);
           });

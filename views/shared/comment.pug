@@ -1,0 +1,13 @@
+article.media.animated.fadeIn
+  figure.media-left
+    p.image.is-32x32
+      if author.avatar.data !== null
+        img(src="data:image/jpg;base64," + author.avatar.data.toString('base64'))
+      else
+        img(src= 'http://icon-icons.com/icons2/1070/PNG/512/darth-vader_icon-icons.com_76959.png')
+  .media-content
+    .content
+      p.comment-content
+        strong.capitalize= author.username
+        br
+        | #{comment}

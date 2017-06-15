@@ -12,7 +12,8 @@ $(function () {
   let postToUserInput = $('.post-touser-input');
   let chatContainer = $('.chat-container');
   let privateToAll = $('#private-to-all');
-
+  let commentInput = $('.comment-input');
+  let commentContainer = $('.comment-container');
   $('#butt').on('click', function() {
     $('#59428e74b7c7951468fd4f39').find('.likes').text(5);
   });
@@ -24,6 +25,26 @@ $(function () {
     post.find('.like').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
       post.find('.like').removeClass('animated jello');
     });
+  });
+  socket.on('comment', data => {
+    console.log('commin');
+    $('.comment-container').each((index, element) => {
+      if ($(element).data().postid === data.postid) {
+        $(element).append(data.comment);
+      }
+
+    });
+  });
+  postContainer.on('keyup', '.comment-input', function (e) {
+    if (e.keyCode === 13 && $(this).val().length > 0) {
+      console.log('comm');
+      let comment = {
+        content: $(this).val(),
+        postid: $(this).data().postid
+      };
+      socket.emit('comment', comment);
+      $(this).val('');
+    }
   });
 
   let changeHashtags = function() {
@@ -121,7 +142,7 @@ $(function () {
     }
   });
 
-  $('.chat-container').on('keyup', '.chat-input', function (e) {
+  chatContainer.on('keyup', '.chat-input', function (e) {
     if (e.keyCode === 13 && $(this).val().length > 0) {
       let thisChat = $('#chat-' + $(this).data().user).find('.chat-history');
       thisChat.append(`<div class="chat-message clearfix"><div class="chat-message-content clearfix"><h5>Me</h5><p>${$(this).val()}</p></div></div><hr/>`);

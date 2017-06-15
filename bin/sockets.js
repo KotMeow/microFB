@@ -190,7 +190,12 @@ module.exports.listen = function (io) {
                     to: toUsername,
                     canShare: canShare
                   });
-                  io.in(friend.username).emit('newpost', {post: html, to: toUsername, creator: user.username, tags: tags});
+                  io.in(friend.username).emit('newpost', {
+                    post: html,
+                    to: toUsername,
+                    creator: user.username,
+                    tags: tags
+                  });
                 });
                 let canShare = false;
                 let html = fn({
@@ -219,7 +224,7 @@ module.exports.listen = function (io) {
     socket.on('sharePost', data => {
       Promise.all([
         User.findById(socket.request.user).populate('friends'),
-        Post.findById(data).populate('_creator to')
+        Post.findById(data).populate('_creator to comments.author')
       ]).spread((user, post) => {
         user.sharedPosts.push(data);
         var fn = pug.compileFile(path.join(__dirname, '../views/shared/post.pug'));
@@ -317,6 +322,34 @@ module.exports.listen = function (io) {
           io.in(friend.username).emit('like', data);
         });
       });
+    });
+
+    socket.on('comment', data => {
+      Promise.all([User.findById(socket.request.user).populate('friends'), Post.findById(data.postid)])
+          .spread((user, post) => {
+            let comment = {
+              author: user._id,
+              content: data.content
+            };
+            post.comments.push(comment);
+            post.save().then(() => {
+              var fn = pug.compileFile(path.join(__dirname, '../views/shared/comment.pug'));
+              let html = fn({author: user, comment: comment.content});
+              user.friends.forEach(friend => {
+                io.in(friend.username).emit('comment', {
+                  comment: html,
+                  postid: data.postid
+                });
+              });
+              io.in(user.username).emit('comment', {
+                comment: html,
+                postid: data.postid
+              });
+            });
+          })
+          .catch(err => {
+            console.log(err);
+          });
     });
   });
 
